@@ -1653,10 +1653,8 @@ public class GameInfo {
 			String fileContents;
 			try {
 				if (sourceFile.exists()) {
-					fileContents = TscPane.parseScript(sourceFile, gameConfig.getEncoding());
 					fileContents = TscPane.parseScript(sourceFile, gameConfig.getEncoding(), type);
 				} else {
-					fileContents = TscPane.parseScript(scriptFile, gameConfig.getEncoding());
 					fileContents = TscPane.parseScript(scriptFile, gameConfig.getEncoding(), type);
 				}
 				boolean modified = false;
