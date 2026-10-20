@@ -92,6 +92,12 @@ public class GameInfo {
 	public File getArmsImageFile() {return armsImageFile;}
 	public File getFaceFile() {return faceFile;}
 	public File getItemImageFile() {return itemImageFile;}
+
+	public enum MOD_TYPE {MOD_CS, MOD_KS, MOD_CS_PLUS, MOD_MR, MOD_GUXT, DUMMY}
+	public enum MOD_TYPE {MOD_CS, MOD_KS, MOD_CS_PLUS_2011, MOD_MR, MOD_GUXT, DUMMY, MOD_CS_PLUS_2024}
+	public MOD_TYPE type;
+
+	public static final String[] sfxNames = loadSfxNames();
 	public File getKeyItemImageFile() {return keyItemImageFile;}
 	public File getNpcChar() {return npcCharFile;}
 	public File getNpcLord() {return npcLordFile;}
