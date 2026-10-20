@@ -947,8 +947,6 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 				float assumedScale = exeDat.getConfig().getTileSize() / 16;
 				ImageIcon face = new ImageIcon(
 						rm.getImg(exeDat.getFaceFile())
-								.getSubimage((int) (48 * assumedScale) * (argNum % 6),
-										(int) (48 * assumedScale) * (argNum / 6),
 								.getSubimage((int) (48 * assumedScale) * (faceNum % 6),
 										(int) (48 * assumedScale) * (faceNum / 6),
 										(int) (48 * assumedScale),
