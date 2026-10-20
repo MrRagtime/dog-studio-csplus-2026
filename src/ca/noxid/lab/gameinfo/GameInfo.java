@@ -895,6 +895,7 @@ public class GameInfo {
 							light.get("player").asBoolean() //$NON-NLS-1$
 					);
 					masterEntityList.add(i, e);
+				}
 				} else {
 				File tblFile = ResourceManager.checkBase(new File(dataDir + "/npc.tbl")); //$NON-NLS-1$
 
