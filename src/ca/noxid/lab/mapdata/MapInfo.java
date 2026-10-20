@@ -346,7 +346,6 @@ private File getStageDirectory(File directory)
 
 		} catch (IOException e) {
 			StrTools.msgBox(Messages.getString("MapInfo.10") + getPXMFile(d, directory)); //$NON-NLS-1$
-					+ ".pxm"); //$NON-NLS-1$
 			mapX = 21;
 			mapY = 16;
 			if (EditorApp.EDITOR_MODE == 0) {
