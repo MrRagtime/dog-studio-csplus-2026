@@ -37,7 +37,7 @@ $	string
 Tab and newline are token delimeters...
 TSC List revised by Jackalope and Lace
 
-[DS_TSC]	104
+[DS_TSC]	105
 <2MV	1	#---	2P MoVe	Move player to the other player's position. WWW0 - WWW is the number of pixels offset from the player, but default to 1 tile if left at 0. WWW1 - spawn on right side instead of left.	0	0	1	4	4	4	4
 <2PJ	1	e---	2P Jump	Jump to event W if in 2-player mode.	0	0	1	4	4	4	4
 <ACH	1	#---	ACHievement	Unlock achievement W.	0	0	1	4	4	4	4
