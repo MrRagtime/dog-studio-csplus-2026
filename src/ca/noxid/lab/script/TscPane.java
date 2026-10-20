@@ -1474,7 +1474,7 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			byte[] datArray = dataBuf.array();
 
 			// CS+2024 has unencrypted scripts.
-			if (format != GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
+			if (format != GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 				int cypher = dataBuf.get(fileSize / 2);
 				if (scriptFile.getName().endsWith(".tsc")) { //$NON-NLS-1$
 					for (int i = 0; i < fileSize; i++) {
@@ -1656,7 +1656,7 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			byte[] stripArr = strippedScript.getBytes();
 			int fileSize = stripArr.length;
 			// CS+2024 has unencrypted scripts.
-			if (format != GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
+			if (format != GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 				if (fileSize > 0) {
 					int cypher = stripArr[fileSize / 2];
 					if (dest.getName().endsWith(".tsc")) { //$NON-NLS-1$
