@@ -222,7 +222,7 @@ private File getStageDirectory(File directory)
 
 		File pxa = getPXAFile(d, directory);
 		pxaFile = ResourceManager.checkBase(pxa);
-		if (EditorApp.EDITOR_MODE != 0 || exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
+		if (EditorApp.EDITOR_MODE != 0 || exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 			int tilesetW = iMan.getImgW(tileset) / getConfig().getTileSize();
 			int tilesetH = iMan.getImgH(tileset) / getConfig().getTileSize();
 			iMan.addPxa(pxaFile, tilesetW * tilesetH);
@@ -1716,7 +1716,7 @@ private File getStageDirectory(File directory)
 		pxaFile = pxaFile2;
 		tileset = tileFile;
 		iMan.addImage(tileFile, 1);
-		if (EditorApp.EDITOR_MODE != 0 || exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
+		if (EditorApp.EDITOR_MODE != 0 || exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 			int tilesetW = iMan.getImgW(tileset) / getConfig().getTileSize();
 			int tilesetH = iMan.getImgH(tileset) / getConfig().getTileSize();
 			iMan.addPxa(pxaFile, tilesetW * tilesetH);
