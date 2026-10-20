@@ -206,6 +206,9 @@ public class NpcTblEditor extends JDialog implements ActionListener {
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.5;
 		c.weighty = 0.5;
+		//JScrollPane jsp = new JScrollPane(categoryTree);
+		//jsp.setPreferredSize(new Dimension(200, 80));
+		//retVal.add(jsp, c);
 		JPanel pane;
 		
 		pane = buildMainEditorPane();
@@ -626,16 +629,17 @@ private JPanel buildMainEditorPane() {
 		return retVal;
 	}
 	
+
 	private JPanel buildInfoPane() {
+
+		root = new DefaultMutableTreeNode("root"); //$NON-NLS-1$
+		treeModel = new DefaultTreeModel(root);
+		//JTree categoryTree = new JTree();
+		//categoryTree.setRootVisible(false);
+		//categoryTree.removeAll();
 
 		JPanel retVal = new JPanel();
 		retVal.setBorder(BorderFactory.createTitledBorder(Messages.getString("NpcTblEditor.0"))); //$NON-NLS-1$
-		retVal.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		c.fill = GridBagConstraints.BOTH;
-		retVal.add(new JLabel(Messages.getString("NpcTblEditor.54")), c); //$NON-NLS-1$
 		c.gridy++;
 		retVal.add(new JLabel(Messages.getString("NpcTblEditor.55")), c); //$NON-NLS-1$
 		descArea.setEditable(true);
