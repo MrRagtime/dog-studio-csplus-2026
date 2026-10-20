@@ -98,7 +98,7 @@ public class GameInfo {
 	public File getFaceFile() {return faceFile;}
 	public File getItemImageFile() {return itemImageFile;}
 
-	public enum MOD_TYPE {MOD_CS, MOD_KS, MOD_CS_PLUS_2011, MOD_MR, MOD_GUXT, DUMMY, MOD_CS_PLUS_2024}
+	public enum MOD_TYPE {MOD_CS, MOD_KS, MOD_CS_PLUS_2011, MOD_MR, MOD_GUXT, DUMMY, MOD_CS_PLUS_2026}
 	public MOD_TYPE type;
 
 	public static final String[] sfxNames = loadSfxNames();
