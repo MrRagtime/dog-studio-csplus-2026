@@ -206,31 +206,10 @@ public class GameInfo {
 		npcSymFile = ResourceManager.checkBase(npcSymFile);
 		itemImageFile = new File(dataDir + "/ItemImage" + imageExtension); //$NON-NLS-1$
 		itemImageFile = ResourceManager.checkBase(itemImageFile);
-		if (EditorApp.isColorAndKeyEnabled()) {
-			keyItemImageFile = new File(dataDir + "/KeyImage" + imageExtension); //$NON-NLS-1$
-			keyItemImageFile = ResourceManager.checkBase(keyItemImageFile);
-		}
-		if (EditorApp.isCsdhMode()) {
-			npcCharFile = new File(dataDir + "/Npc/NpcChar" + imageExtension); //$NON-NLS-1$
-			npcCharFile = ResourceManager.checkBase(npcCharFile);
-			npcLordFile = new File(dataDir + "/Npc/NpcLord" + imageExtension); //$NON-NLS-1$
-			npcLordFile = ResourceManager.checkBase(npcLordFile);
-			npcBllgFile = new File(dataDir + "/Npc/NpcBllg" + imageExtension); //$NON-NLS-1$
-			npcBllgFile = ResourceManager.checkBase(npcBllgFile);
-			npcFamFile = new File(dataDir + "/Npc/NpcFam" + imageExtension); //$NON-NLS-1$
-			npcFamFile = ResourceManager.checkBase(npcFamFile);
-			npcEzrFile = new File(dataDir + "/Npc/NpcEzr" + imageExtension); //$NON-NLS-1$
-			npcEzrFile = ResourceManager.checkBase(npcEzrFile);
-		}
 		faceFile = new File(dataDir + "/Face" + imageExtension); //$NON-NLS-1$
 		faceFile = ResourceManager.checkBase(faceFile);
 		armsImageFile = new File(dataDir + "/ArmsImage" + imageExtension); //$NON-NLS-1$
 		armsImageFile = ResourceManager.checkBase(armsImageFile);
-		if (EditorConfigDialog.isAutumnalLabEnabled()) {
-			autumnObjectsFile = ResourceManager.checkBase(new File(dataDir + "/Npc/NpcAutumnObj" + imageExtension)); //$NON-NLS-1$
-			autumnItemsFile   = ResourceManager.checkBase(new File(dataDir + "/Autumn" + imageExtension)); //$NON-NLS-1$
-			autumnCharactersFile = ResourceManager.checkBase(new File(dataDir + "/Npc/NpcAutumnChar" + imageExtension)); //$NON-NLS-1$
-		}
 		loadNpcTbl();
 	}
 	
@@ -397,17 +376,8 @@ public class GameInfo {
 		iMan.reloadImage(npcReguFile, 1);
 		iMan.reloadImage(npcSymFile, 1);
 		iMan.reloadImage(itemImageFile, 1);
-		if (keyItemImageFile != null) iMan.reloadImage(keyItemImageFile, 1);
-		if (npcCharFile != null) iMan.reloadImage(npcCharFile, 1);
-		if (npcLordFile != null) iMan.reloadImage(npcLordFile, 1);
-		if (npcBllgFile != null) iMan.reloadImage(npcBllgFile, 1);
-		if (npcFamFile != null) iMan.reloadImage(npcFamFile, 1);
-		if (npcEzrFile != null) iMan.reloadImage(npcEzrFile, 1);
 		iMan.reloadImage(faceFile, 1);
 		iMan.reloadImage(armsImageFile, 1);
-		if (autumnObjectsFile != null)   iMan.reloadImage(autumnObjectsFile, 1);
-		if (autumnItemsFile != null)     iMan.reloadImage(autumnItemsFile, 1);
-		if (autumnCharactersFile != null) iMan.reloadImage(autumnCharactersFile, 1);
 	}
 	
 	public String[] getMapNames() {
@@ -1843,10 +1813,6 @@ public class GameInfo {
 				chan.read(dBuf);
 				chan.close();
 				inStream.close();
-				if (type != MOD_TYPE.MOD_CS_PLUS) {
-					dBuf.position(0);
-					dBuf.putInt(mapdataStore.size());
-				}
 				dBuf.position(newPos);
 				dBuf.put(mapdataStore.get(map).toBuf(type, encoding));
 				oStream = new FileOutputStream(tblFile);
@@ -1858,12 +1824,12 @@ public class GameInfo {
 				StrTools.msgBox(Messages.getString("GameInfo.53") + tblFile); //$NON-NLS-1$
 				err.printStackTrace();
 			}
+			dat.markUnchanged(); //I may regret doing this early
+			if (inStream != null)
+				inStream.close();
+			if (oStream != null)
+				oStream.close();
 		}
-		dat.markUnchanged(); //I may regret doing this early
-		if (inStream != null)
-			inStream.close();
-		if (oStream != null)
-			oStream.close();
 	}
 	
 	public void exportMapdata(String outFilename, MOD_TYPE format) throws IOException {
