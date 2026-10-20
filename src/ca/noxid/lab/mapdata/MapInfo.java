@@ -285,8 +285,8 @@ private File getStageDirectory(File directory)
 				// skip meaningless "parts size" byte
 				inStream.skip(1);
 			} else {
-				mapBuf.order(ByteOrder.LITTLE_ENDIAN);
-				inChan.read(mapBuf);
+				inChan.close();
+				inStream.close();
 				throw new IOException(Messages.getString("MapInfo.9")); //$NON-NLS-1$
 			}
 			ByteBuffer hBuf = ByteBuffer.allocate(4);
@@ -818,22 +818,6 @@ private File getStageDirectory(File directory)
 					srcImg = iMan.getImg(tileset);
 				else if (tilesetNum == 0x10) // npc myChar
 					srcImg = iMan.getImg(exeData.getMyCharFile());
-				else if (EditorApp.isCsdhMode() && tilesetNum == 0x18 && exeData.getNpcChar() != null)
-					srcImg = iMan.getImg(exeData.getNpcChar());
-				else if (EditorApp.isCsdhMode() && tilesetNum == 0x19 && exeData.getNpcLord() != null)
-					srcImg = iMan.getImg(exeData.getNpcLord());
-				else if (EditorApp.isCsdhMode() && tilesetNum == 0x1C && exeData.getNpcBllg() != null)
-					srcImg = iMan.getImg(exeData.getNpcBllg());
-				else if (EditorApp.isCsdhMode() && tilesetNum == 0x1D && exeData.getNpcFam() != null)
-					srcImg = iMan.getImg(exeData.getNpcFam());
-				else if (EditorApp.isCsdhMode() && tilesetNum == 0x1F && exeData.getNpcEzr() != null)
-					srcImg = iMan.getImg(exeData.getNpcEzr());
-				else if (tilesetNum == 0x19 && exeData.getAutumnObjectsFile() != null)
-					srcImg = iMan.getImg(exeData.getAutumnObjectsFile());
-				else if (tilesetNum == 0x26 && exeData.getAutumnItemsFile() != null)
-					srcImg = iMan.getImg(exeData.getAutumnItemsFile());
-				else if (tilesetNum == 0x27 && exeData.getAutumnCharactersFile() != null)
-					srcImg = iMan.getImg(exeData.getAutumnCharactersFile());
 				else
 					srcImg = null;
 
@@ -1308,7 +1292,7 @@ private File getStageDirectory(File directory)
 			case 0: // standard CS editor
 				byte[] tag;
 				int bytesPerTile;
-				if (exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
+				if (exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 					tag = xpxmTag;
 					bytesPerTile = 2;
 				} else {
@@ -1324,7 +1308,7 @@ private File getStageDirectory(File directory)
 				for (int y = 0; y < mapY; y++)
 					for (int x = 0; x < mapX; x++) {
 						int tile = getTile(x, y, -1);
-						if (exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
+						if (exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 							mapBuf.putShort((short) tile);
 						} else {
 							mapBuf.put((byte) tile);
@@ -1429,8 +1413,6 @@ private File getStageDirectory(File directory)
 			Collections.sort(pxeList);
 			FileOutputStream out = new FileOutputStream(pxeFile);
 			FileChannel pxeChannel = out.getChannel();
-			byte[] pxeTagBytes = new byte[]{ 'P', 'X', 'E', pxeVersion };
-			pxeChannel.write(ByteBuffer.wrap(pxeTagBytes));
 			ByteBuffer dumbBuf = ByteBuffer.allocate(4);
 			dumbBuf.order(ByteOrder.LITTLE_ENDIAN);
 			dumbBuf.putShort((short) pxeList.size());
@@ -1465,8 +1447,6 @@ private File getStageDirectory(File directory)
 				e.printStackTrace();
 			}
 		}
-
-		pxeFormatVersion = pxeVersion;
 
 		// save the pxa
 		if (EditorApp.EDITOR_MODE != 2)
