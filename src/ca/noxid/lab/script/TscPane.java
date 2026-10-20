@@ -941,38 +941,24 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			break;
 		}
 		// Face
-		case 'f': {
+		case 'f': //face
 			try {
-				int faceNum = fArgNum % 1000;
-				int tileSize = exeDat.getConfig().getTileSize();
-				int faceSize = (tileSize > 16) ? 48 * (tileSize / 16) : 48;
-				BufferedImage faceSheet = rm.getImg(exeDat.getFaceFile());
-				BufferedImage subImg = faceSheet.getSubimage(
-						faceSize * (faceNum % 6), faceSize * (faceNum / 6), faceSize, faceSize);
-				if (tileSize == 16) {
-					BufferedImage scaled = new BufferedImage(faceSize * 2, faceSize * 2, BufferedImage.TYPE_INT_ARGB);
-					Graphics2D g = scaled.createGraphics();
-					g.drawImage(subImg, 0, 0, faceSize * 2, faceSize * 2, null);
-					g.dispose();
-					subImg = scaled;
-				}
-				JPanel facePanel = new JPanel();
-				facePanel.setLayout(new BoxLayout(facePanel, BoxLayout.Y_AXIS));
-				JLabel faceLabel = new JLabel(new ImageIcon(subImg));
-				faceLabel.setBackground(Color.black);
-				faceLabel.setOpaque(true);
-				faceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-				facePanel.add(faceLabel);
-				JButton selectFaceBtn = new JButton("Select");
-				selectFaceBtn.setFont(selectFaceBtn.getFont().deriveFont(10f));
-				selectFaceBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-				selectFaceBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				selectFaceBtn.addActionListener(ae -> showFacePicker(faceSheet, 48, paramOffset, paramLen));
-				facePanel.add(selectFaceBtn);
-				jp.add(facePanel);
-			} catch (Exception ignored) {}
+				int faceNum = exeDat.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024 ? argNum % 100 : argNum;
+				float assumedScale = exeDat.getConfig().getTileSize() / 16;
+				ImageIcon face = new ImageIcon(
+						rm.getImg(exeDat.getFaceFile())
+								.getSubimage((int) (48 * assumedScale) * (argNum % 6),
+										(int) (48 * assumedScale) * (argNum / 6),
+								.getSubimage((int) (48 * assumedScale) * (faceNum % 6),
+										(int) (48 * assumedScale) * (faceNum / 6),
+										(int) (48 * assumedScale),
+										(int) (48 * assumedScale)));
+				JLabel label = new JLabel(face);
+				label.setBackground(Color.black);
+				jp.add(label);
+			} catch (Exception ignored) {
+			}
 			break;
-		}
 		// Color Preset
 		case 'c': {
 			if (!EditorApp.isColorAndKeyEnabled()) {
