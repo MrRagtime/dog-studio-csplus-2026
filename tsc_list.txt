@@ -37,7 +37,10 @@ $	string
 Tab and newline are token delimeters...
 TSC List revised by Jackalope and Lace
 
-[CE_TSC]	91
+[DS_TSC]	91
+<2MV	1	#---	2P MoVe	Move player to the other player's position. WWW0 - WWW is the number of pixels offset from the player, but default to 1 tile if left at 0. WWW1 - spawn on right side instead of left.	0	0	1	4	4	4	4
+<2PJ	1	e---	2P Jump	Jump to event W if in 2-player mode.	0	0	1	4	4	4	4
+<ACH	1	#---	ACHievement	Unlock achievement W.	0	0	1	4	4	4	4
 <AE+	0	------	Arms Energy +	Refill all weapon ammo.
 <AM+	2	aA----	ArMs +	Give weapon W with X ammo. Use 0000 for infinite ammo.
 <AM-	1	a-----	ArMs -	Remove weapon W.
@@ -64,9 +67,10 @@ TSC List revised by Jackalope and Lace
 <EQ-	1	E-----	EQuip -	Dequip item W.
 <ESC	0	------	ESCape	Quit to title screen.
 <EVE	1	e-----	EVEnt	Go to event W.
-<FAC	1	f-----	FACe	Show face W in the message box.
+<FAC	1	f---	FACe	W is broken down into ABCC. Show face CC in the message box with direction A and animation B.	0	0	1	4	4	4	4
 <FAI	1	d-----	FAde In	Fade in with direction W.
 <FAO	1	d-----	FAde Out	Fade out with direction W.
+<FF-	2	FF--	First Flag -	Iterates over the range X to W and clears only the first NPC flag that's set in the range.	0	0	1	4	4	4	4
 <FL+	1	F-----	FLag +	Set flag W. Using flags over 8000 is inadvisable.
 <FL-	1	F-----	FLag -	Clear flag W.
 <FLA	0	------	FLAsh	Flash the screen white.
@@ -76,10 +80,14 @@ TSC List revised by Jackalope and Lace
 <FOM	1	.---	Frame On My character	Focus on the PC in W ticks. Use W > 0.	0	0	1	4	4	4	4
 <FON	2	N.--	Frame On Npc	Focus on entity W in X ticks. Use X > 0.	0	0	1	4	4	4	4
 <FRE	0	------	FREe	Free game action and the PC.
+<FR2	0	----	FRee 2	Exits the multi-page item description state.	0	0	1	4	4	4	4
 <GIT	1	g-----	Graphic ITem	Display an item or weapon icon above the message box. Add 1000 to W for items. Use 0000 to remove.
 <HMC	0	------	Hide My Character	Hide the PC.
+<HM2	0	----	Hide My Character 2	Hide the PC that initiated the event.	0	0	1	4	4	4	4
 <INI	0	----	INItialize game	Reset memory and restart game.	1	0	1	4	4	4	4
+<INJ	3	i#e-	Item Number Jump	Jump to event Y if the PC has at least X of item W.	0	0	1	4	4	4	4
 <INP	3	Nnd-	Initialize NPc	Change entity W to type X with direction Y and set entity flag 100 (0x8000).	0	0	1	4	4	4	4
+<I+N	2	i#--	Item + Number	Add one item of the given type W, up to the max value provided X. For instance <I+N0014:0002 adds one of item 14 but doesn't let the item count go higher than 2.	0	0	1	4	4	4	4
 <IT+	1	i-----	ITem +	Give item W.
 <IT-	1	i-----	ITem -	Remove item W.
 <ITJ	2	ie----	ITem Jump	Jump to event X if the PC has item W.
@@ -102,10 +110,14 @@ TSC List revised by Jackalope and Lace
 <NCJ	2	ne----	Npc Check Jump	Jump to event X if any entity of type W exists.
 <NOD	0	------	NOD	Wait for player input before resuming script.
 <NUM	1	#-----	NUMber	Prints the value [4a5b34+W*4] to the message box. Use 0000 to print the last used W from compatible commands (eg AM+).
+<POP	0	----	POP	Pop the read position stack and return to where we were when <PSH was last called.	0	0	1	4	4	4	4
 <PRI	0	------	PRevent Interaction	Lock player controls and freeze game action.
+<PSH	1	e---	PuSH	Push the next read position onto a stack and jump to event W, so we can return to our current place later with <POP.	0	0	1	4	4	4	4
 <PS+	2	#m--	Permit Stage +	Set teleporter slot W to event X. Selecting slot W while using the teleporter menu will jump to event X.	0	0	1	4	4	4	4
 <QUA	1	.-----	QUAke	Shake the screen for W ticks.
+<RFW	0	----	Rapid Fire Weapon	Enable rapid firing of weapons. Normally, this only affects the Polar Star.	0	0	1	4	4	4	4
 <RMU	0	------	Restore MUsic	Resume the song last played.
+<RSP	0	----	Reset Secondary Position	Moves all players to the first player's position.	0	0	1	4	4	4	4
 <SAT	0	----	Set Auto Turbo	Instantly display text. Use before a <MSG/2/3; works until <END. Same command as <CAT.	0	0	1	4	4	4	4
 <SIL	1	l---	Set ILlustration	Show illustration W (during credits).	0	0	1	4	4	4	4
 <SK+	1	F-----	SKipflag +	Set skipflag W.
