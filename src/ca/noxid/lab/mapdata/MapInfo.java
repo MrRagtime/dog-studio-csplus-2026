@@ -181,7 +181,6 @@ public class MapInfo implements Changeable {
 			int tilesetH = iMan.getImgH(tileset) / getConfig().getTileSize();
 			iMan.addPxa(pxaFile, tilesetW * tilesetH);
 		} else {
-			iMan.addPxa(pxaFile, 256);
 			iMan.addPxa(pxaFile, exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024 ? 65536 : 256);
 		}
 
@@ -227,14 +226,6 @@ public class MapInfo implements Changeable {
 
 			FileInputStream inStream = new FileInputStream(currentFile);
 			FileChannel inChan = inStream.getChannel();
-			ByteBuffer hBuf = ByteBuffer.allocate(8);
-			hBuf.order(ByteOrder.LITTLE_ENDIAN);
-			inChan.read(hBuf);
-			// read the filetag
-			hBuf.flip();
-			byte tagArray[] = new byte[3];
-			hBuf.get(tagArray, 0, 3);
-			if (!(new String(tagArray).equals("PXM"))) { //$NON-NLS-1$
 			String tagArrayString = new String(inStream.readNBytes(3));
 
 			if (tagArrayString.equals("PXM")) { //$NON-NLS-1$
@@ -250,7 +241,6 @@ public class MapInfo implements Changeable {
 				inChan.read(mapBuf);
 				throw new IOException(Messages.getString("MapInfo.9")); //$NON-NLS-1$
 			}
-			pxmVersion = hBuf.get();
 			ByteBuffer hBuf = ByteBuffer.allocate(4);
 			hBuf.order(ByteOrder.LITTLE_ENDIAN);
 			inChan.read(hBuf);
@@ -329,7 +319,6 @@ public class MapInfo implements Changeable {
 		{
 			for (int y = 0; y < mapY; y++)
 				for (int x = 0; x < mapX; x++) {
-					int next = 0xFF & mapBuf.get();
 					int next = pxmVersion == 0x10 ? mapBuf.get() & 0xFF : mapBuf.getShort() & 0xFFFF;
 					if (calcPxa(next) < 0x20)
 						map[1][y][x] = next;
@@ -1270,7 +1259,6 @@ public class MapInfo implements Changeable {
 			FileChannel pxmChannel = out.getChannel();
 			switch (EditorApp.EDITOR_MODE) {
 			case 0: // standard CS editor
-				headerBuf = ByteBuffer.wrap(pxmTag);
 				byte[] tag;
 				int bytesPerTile;
 				if (exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
@@ -1282,14 +1270,12 @@ public class MapInfo implements Changeable {
 				}
 				headerBuf = ByteBuffer.wrap(tag);
 				pxmChannel.write(headerBuf);
-				mapBuf = ByteBuffer.allocate(mapX * mapY + 4);
 				mapBuf = ByteBuffer.allocate(mapX * mapY * bytesPerTile + 4);
 				mapBuf.order(ByteOrder.LITTLE_ENDIAN);
 				mapBuf.putShort((short) mapX);
 				mapBuf.putShort((short) mapY);
 				for (int y = 0; y < mapY; y++)
 					for (int x = 0; x < mapX; x++) {
-						mapBuf.put((byte) getTile(x, y, -1));
 						int tile = getTile(x, y, -1);
 						if (exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
 							mapBuf.putShort((short) tile);
@@ -1687,7 +1673,6 @@ public class MapInfo implements Changeable {
 			int tilesetH = iMan.getImgH(tileset) / getConfig().getTileSize();
 			iMan.addPxa(pxaFile, tilesetW * tilesetH);
 		} else {
-			iMan.addPxa(pxaFile, 256);
 			iMan.addPxa(pxaFile, exeData.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024 ? 65536 : 256);
 		}
 	}
