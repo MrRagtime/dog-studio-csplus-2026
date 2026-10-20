@@ -151,10 +151,16 @@ public class GameInfo {
 		} else if (base.toString().endsWith(".tbl")){ //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS_PLUS;
 			dataDir = base.getParentFile();
-			if (EditorApp.EDITOR_BITMAP_MODE == 1)
-				defaultImageExt = ".png";
-			else
+            defaultImageExt = ".bmp";
+			if (true) { // TODO
+				type = MOD_TYPE.MOD_CS_PLUS_2024;
+				dataDir = base.getParentFile();
+				defaultImageExt = ".1.png";
+			} else {
+				type = MOD_TYPE.MOD_CS_PLUS_2011;
+				dataDir = base.getParentFile();
 				defaultImageExt = ".bmp";
+			}
 		} else if (base.toString().endsWith(".bin")) { //$NON-NLS-1$
 			if (base.getName().equals("mrmap.bin")) { //$NON-NLS-1$
 				//moustache
@@ -174,6 +180,7 @@ public class GameInfo {
 			}
 		} else if (base.toString().endsWith(".pxm")) { //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS_PLUS;
+			type = MOD_TYPE.MOD_CS_PLUS_2011;
 			dataDir = base.getParentFile().getParentFile();
 			if (EditorApp.EDITOR_BITMAP_MODE == 1)
 				defaultImageExt = ".png";
@@ -217,6 +224,7 @@ public class GameInfo {
 			npcEzrFile = ResourceManager.checkBase(npcEzrFile);
 		}
 		faceFile = new File(dataDir + "/Face" + imageExtension); //$NON-NLS-1$
+		faceFile = new File(dataDir + (type == MOD_TYPE.MOD_CS_PLUS_2024 ? "/Face1" : "/Face") + imageExtension); //$NON-NLS-1$
 		faceFile = ResourceManager.checkBase(faceFile);
 		armsImageFile = new File(dataDir + "/ArmsImage" + imageExtension); //$NON-NLS-1$
 		armsImageFile = ResourceManager.checkBase(armsImageFile);
@@ -1080,6 +1088,7 @@ public class GameInfo {
 			}
 		} else {
 			if (type == MOD_TYPE.MOD_CS_PLUS) {
+			if (type == MOD_TYPE.MOD_CS_PLUS_2011 || type == MOD_TYPE.MOD_CS_PLUS_2024) {
 				tblFile = new File(dataDir + "/stage.tbl"); //$NON-NLS-1$
 				mapdataSize = 229;
 			} else if (type == MOD_TYPE.MOD_KS) { //if type == KS
@@ -1098,6 +1107,7 @@ public class GameInfo {
 				ByteBuffer dBuf;
 				int newPos;
 				if (type == MOD_TYPE.MOD_CS_PLUS) {
+				if (type == MOD_TYPE.MOD_CS_PLUS_2011 || type == MOD_TYPE.MOD_CS_PLUS_2024) {
 					dBuf = ByteBuffer.allocate(mapdataStore.size() * mapdataSize);
 					newPos = map*mapdataSize;
 				} else {
