@@ -1497,6 +1497,7 @@ public class EditorApp extends JFrame implements ActionListener {
 				if (exeData != null && exeData.canPatch()) {
 					try {
 						exeData.exportMapdata("stage.tbl", GameInfo.MOD_TYPE.MOD_CS_PLUS);
+						exeData.exportMapdata("stage.tbl", GameInfo.MOD_TYPE.MOD_CS_PLUS_2011);
 					} catch (IOException ex) {
 						ex.printStackTrace();
 						JOptionPane.showMessageDialog(EditorApp.this,
@@ -1745,6 +1746,21 @@ public class EditorApp extends JFrame implements ActionListener {
 						}
 						break;
 					case MOD_CS_PLUS:
+						if (saveAll(false)) {
+							String path = System.getenv("programfiles(x86)"); //$NON-NLS-1$
+							if (path == null) {
+								path = System.getenv("programfiles"); //$NON-NLS-1$
+							}
+							Runtime rt = Runtime.getRuntime();
+							try {
+								rt.exec(path + "/Steam/Steam.exe -applaunch 200900"); //$NON-NLS-1$
+							} catch (IOException e) {
+								e.printStackTrace();
+								StrTools.msgBox(Messages.getString("EditorApp.50")); //$NON-NLS-1$
+							}
+						}
+					case MOD_CS_PLUS_2011:
+					case MOD_CS_PLUS_2024:
 						if (saveAll(false)) {
 							String path = System.getenv("programfiles(x86)"); //$NON-NLS-1$
 							if (path == null) {
