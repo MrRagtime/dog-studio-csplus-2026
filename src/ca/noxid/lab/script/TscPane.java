@@ -940,10 +940,9 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			} catch (Exception ignored) {}
 			break;
 		}
-		// Face
 		case 'f': //face
 			try {
-				int faceNum = exeDat.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2024 ? argNum % 100 : argNum;
+				int faceNum = exeDat.type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2026 ? argNum % 100 : argNum;
 				float assumedScale = exeDat.getConfig().getTileSize() / 16;
 				ImageIcon face = new ImageIcon(
 						rm.getImg(exeDat.getFaceFile())
@@ -976,26 +975,6 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			} catch (Exception ignored) {
 				jp.add(new JLabel(String.valueOf(fArgNum)));
 			}
-			break;
-		}
-		// Key Item
-		case 'k': {
-			if (!EditorApp.isColorAndKeyEnabled()) {
-				break;
-			}
-			try {
-				float assumedScale = exeDat.getConfig().getTileSize() / 16f;
-				ImageIcon keyItemImage = new ImageIcon(
-						rm.getImg(exeDat.getKeyItemImageFile())
-								.getSubimage((int) (32 * assumedScale) * (fArgNum % 8),
-										(int) (16 * assumedScale) * (fArgNum / 8),
-										(int) (32 * assumedScale),
-										(int) (16 * assumedScale)));
-				JLabel label = new JLabel(keyItemImage);
-				label.setBackground(Color.black);
-				label.setOpaque(true);
-				jp.add(label);
-			} catch (Exception ignored) {}
 			break;
 		}
 		// Item
@@ -1584,8 +1563,8 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 				}
 				byte[] stripArr = strippedScript.getBytes(exeDat.getConfig().getEncoding());
 				int fileSize = stripArr.length;
-				// CS+2024 has unencrypted scripts.
-				if (exeDat.type != GameInfo.MOD_TYPE.MOD_CS_PLUS_2024) {
+				// CS+2026 has unencrypted scripts.
+				if (exeDat.type != GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 					if (fileSize > 0) {
 						int cypher = stripArr[fileSize / 2];
 						if (scriptFile.getName().endsWith(".tsc")) { //$NON-NLS-1$
