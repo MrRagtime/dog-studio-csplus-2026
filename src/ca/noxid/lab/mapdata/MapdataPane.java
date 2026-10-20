@@ -61,7 +61,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		Messages.getString("MapdataPane.18"), //$NON-NLS-1$
 	};
 
-	private static final String[] LightingTypes = {
+	private static final String[] lightingTypes = {
 		Messages.getString("MapdataPane.36"), //$NON-NLS-1$
 		Messages.getString("MapdataPane.37"), //$NON-NLS-1$
 		Messages.getString("MapdataPane.38"), //$NON-NLS-1$
@@ -139,7 +139,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		bossType = new JComboBox<>(GameInfo.MapBossesNames);
 		bossType.setSelectedIndex(dat.getBoss());
 		bossType.addActionListener(this);
-		lightingList = new JComboBox<>(LightingTypes);
+		lightingList = new JComboBox<>(lightingTypes);
 		switch (dat.getLighting())
 		{
 			case "disabled":
@@ -248,7 +248,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 				//this.firePropertyChange(P_SCROLL, null, combo.getSelectedIndex());	
 			} else if (combo == bossType) {
 				dat.setBoss(combo.getSelectedIndex());
-				//this.firePropertyChange(P_BOSS, null, combo.getSelectedIndex());				
+				//this.firePropertyChange(P_LIGHTING, null, combo.getSelectedIndex());				
 			} else if (combo == cameraList) {
 				switch (combo.getSelectedIndex())
 				{
