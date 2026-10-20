@@ -1482,12 +1482,7 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 					}
 				}
 			}
-
-		//now read the input as a text
-		String finalText = Messages.getString("TscPane.34"); //$NON-NLS-1$
-		if (datArray != null)
-		//saveRawCharData(datArray, scriptFile);
-		{
+			
 			//now read the input as a text
 			//saveRawCharData(datArray, scriptFile);
 
