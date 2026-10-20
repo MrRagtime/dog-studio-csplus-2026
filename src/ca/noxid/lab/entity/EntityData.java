@@ -295,7 +295,6 @@ public class EntityData  implements Changeable{
 		tbl_lightRadius = lightRadius;
 		tbl_lightDirectional = lightDirectional;
 		tbl_lightPlayer = lightPlayer;
-		categories.putAll(other.categories);
 	}
 	
 	EntityData(String n, int num) {
