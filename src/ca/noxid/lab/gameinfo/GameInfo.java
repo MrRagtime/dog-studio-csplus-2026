@@ -1593,7 +1593,8 @@ public class GameInfo {
 				oStream.close();
 			} catch (IOException err) {
 				StrTools.msgBox(Messages.getString("GameInfo.41")); //$NON-NLS-1$
-		}		
+			}
+		}
 		saveEntityInfo();
 	}
 	
