@@ -48,7 +48,7 @@ I’m going to assume you’re familiar with Booster’s Lab. If not, that’s o
   - A “flip” button has been added allowing you to move the command bar from right to left and vice-versa.  
 - **Undo/Redo**  
   - Ctrl-Z and Ctrl-Y for the script editor.
-- **Read CS+2024/2026's unencrypted TSC scripts.**  
+- **Read CS+2026's unencrypted TSC scripts and new PXA files**  
   - Super, super cool, right?
 - **Command Input Boxes**  
   - There are now input boxes for changing values.  
