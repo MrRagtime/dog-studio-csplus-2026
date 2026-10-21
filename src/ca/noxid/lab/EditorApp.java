@@ -42,6 +42,7 @@ import ca.noxid.lab.entity.EntityPane;
 import ca.noxid.lab.entity.EntitySettingsPanel;
 import ca.noxid.lab.entity.NpcRectDialog;
 import ca.noxid.lab.entity.NpcTblEditor;
+import ca.noxid.lab.entity.SpritesheetOptimizer;
 import ca.noxid.lab.gameinfo.*;
 import ca.noxid.lab.mapdata.MapInfo;
 import ca.noxid.lab.mapdata.Mapdata;
