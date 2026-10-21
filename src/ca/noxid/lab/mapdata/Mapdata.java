@@ -185,7 +185,7 @@ public class Mapdata implements Changeable {
 	public int getMapnum() {return mapNum;}
 	
 	private boolean changed = false;
-
+	
 	public Mapdata(int num, String tilesetName, String fileName, int scrollType, String bgName, String bgWaterName, String npcSet1, String npcSet2, int bossNum, String lighting, byte[] jpName, String mapName, String camera) {
 		mapNum = num;
 		this.tilesetName = tilesetName;
@@ -199,6 +199,7 @@ public class Mapdata implements Changeable {
 		this.lighting = lighting;
 		this.jpName = jpName;
 		this.mapName = mapName;
+		this.camera = camera;
 	}
 	
 	public Mapdata(int num, ByteBuffer buf, MOD_TYPE format, String charEncoding) {
