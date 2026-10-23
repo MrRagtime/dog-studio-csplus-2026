@@ -37,12 +37,13 @@
 
 package ca.noxid.lab;
 
+import ca.noxid.lab.discord.DiscordRPC;
+
 import ca.noxid.lab.entity.EntityData;
 import ca.noxid.lab.entity.EntityPane;
 import ca.noxid.lab.entity.EntitySettingsPanel;
 import ca.noxid.lab.entity.NpcRectDialog;
 import ca.noxid.lab.entity.NpcTblEditor;
-import ca.noxid.lab.entity.SpritesheetOptimizer;
 import ca.noxid.lab.gameinfo.*;
 import ca.noxid.lab.mapdata.MapInfo;
 import ca.noxid.lab.mapdata.Mapdata;
@@ -60,7 +61,6 @@ import com.carrotlord.string.StrTools;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -79,6 +79,7 @@ import java.util.*;
 import java.util.List;
 import java.util.logging.*;
 import java.util.prefs.Preferences;
+
 // import javax.swing.filechooser.FileNameExtensionFilter;
 
 // @SuppressWarnings("rawtypes")
@@ -1761,6 +1762,20 @@ public class EditorApp extends JFrame implements ActionListener {
 						}
 						break;
 					case MOD_CS_PLUS_2026:
+						if (saveAll(false)) {
+							String path = System.getenv("programfiles(x86)"); //$NON-NLS-1$
+							if (path == null) {
+								path = System.getenv("programfiles"); //$NON-NLS-1$
+							}
+							Runtime rt = Runtime.getRuntime();
+							try {
+								rt.exec(path + "/Steam/Steam.exe -applaunch 200900"); //$NON-NLS-1$
+							} catch (IOException e) {
+								e.printStackTrace();
+								StrTools.msgBox(Messages.getString("EditorApp.50")); //$NON-NLS-1$
+							}
+						}
+						break;
 					case MOD_KS:
 						if (saveAll(false)) {
 							exeData.execute();
