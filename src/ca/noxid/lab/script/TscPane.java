@@ -233,7 +233,6 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			});
 			button.setText("Use ScriptSource version");
 			left.add(button);
-
 			String opt2 = parseScript(scriptFile, exeDat.getConfig().getEncoding(), exeDat.type);
 			JPanel right = new JPanel();
 			right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));

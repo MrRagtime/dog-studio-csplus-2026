@@ -62,7 +62,7 @@ public class GameInfo {
 			StrTools.msgBox(Messages.getString("GameInfo.0")); //$NON-NLS-1$
 		}
 	}
-	
+
 	//various static npc image files
 	private File mycharFile;
 	private File npcReguFile;
@@ -79,7 +79,7 @@ public class GameInfo {
 	private File autumnObjectsFile;
 	private File autumnItemsFile;
 	private File autumnCharactersFile;
-	
+
 	//getter and setter
 	public File getDataDirectory() {return dataDir;}
 
@@ -97,11 +97,6 @@ public class GameInfo {
 	public File getArmsImageFile() {return armsImageFile;}
 	public File getFaceFile() {return faceFile;}
 	public File getItemImageFile() {return itemImageFile;}
-
-	public enum MOD_TYPE {MOD_CS, MOD_KS, MOD_CS_PLUS_2011, MOD_MR, MOD_GUXT, DUMMY, MOD_CS_PLUS_2026}
-	public MOD_TYPE type;
-
-	public static final String[] sfxNames = loadSfxNames();
 	public File getKeyItemImageFile() {return keyItemImageFile;}
 	public File getNpcChar() {return npcCharFile;}
 	public File getNpcLord() {return npcLordFile;}
@@ -111,8 +106,8 @@ public class GameInfo {
 	public File getAutumnObjectsFile() {return autumnObjectsFile;}
 	public File getAutumnItemsFile() {return autumnItemsFile;}
 	public File getAutumnCharactersFile() {return autumnCharactersFile;}
-	
-	public enum MOD_TYPE {MOD_CS, MOD_KS, MOD_CS_PLUS, MOD_MR, MOD_GUXT, DUMMY}
+
+	public enum MOD_TYPE {MOD_CS, MOD_KS, MOD_CS_PLUS_2011, MOD_MR, MOD_GUXT, DUMMY, MOD_CS_PLUS_2026}
 	public MOD_TYPE type;
 	
 	public static final String[] sfxNames = loadSfxNames();
@@ -210,6 +205,11 @@ public class GameInfo {
 		faceFile = ResourceManager.checkBase(faceFile);
 		armsImageFile = new File(dataDir + "/ArmsImage" + imageExtension); //$NON-NLS-1$
 		armsImageFile = ResourceManager.checkBase(armsImageFile);
+		if (EditorConfigDialog.isAutumnalLabEnabled()) {
+			autumnObjectsFile = ResourceManager.checkBase(new File(dataDir + "/Npc/NpcAutumnObj" + imageExtension)); //$NON-NLS-1$
+			autumnItemsFile = ResourceManager.checkBase(new File(dataDir + "/Autumn" + imageExtension)); //$NON-NLS-1$
+			autumnCharactersFile = ResourceManager.checkBase(new File(dataDir + "/Npc/NpcAutumnChar" + imageExtension)); //$NON-NLS-1$
+		}
 		loadNpcTbl();
 	}
 	
@@ -370,7 +370,7 @@ public class GameInfo {
 		}		
 		return results;
 	}
-	
+
 	public void loadImages(ResourceManager iMan) {
 		iMan.reloadImage(mycharFile, 1);
 		iMan.reloadImage(npcReguFile, 1);
@@ -378,6 +378,9 @@ public class GameInfo {
 		iMan.reloadImage(itemImageFile, 1);
 		iMan.reloadImage(faceFile, 1);
 		iMan.reloadImage(armsImageFile, 1);
+		if (autumnObjectsFile != null)   iMan.reloadImage(autumnObjectsFile, 1);
+		if (autumnItemsFile != null)     iMan.reloadImage(autumnItemsFile, 1);
+		if (autumnCharactersFile != null) iMan.reloadImage(autumnCharactersFile, 1);
 	}
 	
 	public String[] getMapNames() {
@@ -1663,14 +1666,13 @@ public class GameInfo {
 			for (int i = 0; ; ++i) {
 				try {
 					String path = getSplitStageTablePath(i);
-					
+
 					File file = ResourceManager.checkBase(new File(path + "Metadata.json")); //$NON-NLS-1$
+
 					if (!file.exists())
 						break;
 
 					JsonNode stage = mapper.readTree(file);
-					String mapName = Files.readString(Paths.get(path + "name.txt")); //$NON-NLS-1$
-
 					mapdataStore.add(new Mapdata(i, stage.get("parts").asText(), stage.get("map").asText(), stage.get("bkType").asInt(), stage.get("back").asText(), stage.get("back_water").asText(), stage.get("npc").asText(), stage.get("boss").asText(), stage.get("boss_no").asInt(), !stage.has("lighting") ? "disabled" : stage.get("lighting").asText(), new byte[0x20], !stage.has("name") ? "[Unnamed]" : stage.get("name").asText(), !stage.has("camera") ? "normal" : stage.get("camera").asText()));
 				} catch (IOException e) {
 					break;
@@ -1735,7 +1737,7 @@ public class GameInfo {
 			}
 		}
 	}
-	
+
 	public void saveMapData(int map) throws IOException {
 		if (type == MOD_TYPE.DUMMY) {
 			return;
@@ -1804,10 +1806,10 @@ public class GameInfo {
 				int newPos;
 				if (type == MOD_TYPE.MOD_CS_PLUS_2011) {
 					dBuf = ByteBuffer.allocate(mapdataStore.size() * mapdataSize);
-					newPos = map*mapdataSize;
+					newPos = map * mapdataSize;
 				} else {
 					dBuf = ByteBuffer.allocate(mapdataStore.size() * mapdataSize + 4);
-					newPos = map*mapdataSize + 4;
+					newPos = map * mapdataSize + 4;
 				}
 				dBuf.order(ByteOrder.LITTLE_ENDIAN);
 				chan.read(dBuf);

@@ -73,7 +73,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 	};
 	
 	public Mapdata getMapdata() {return dat;}
-	
+
 	public MapdataPane(GameInfo i, int mapNum, BufferedImage img, boolean warn) {
 		super(img);
 		dat = i.getMapdata(mapNum);
@@ -81,7 +81,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		shouldWarn = warn;
 		addComponentsToPane(this, i);
 	}
-	
+
 	MapdataPane(GameInfo i, File mapFile, BufferedImage img, boolean warn) {
 		super(img);
 		dat = i.addTempMap();
@@ -140,29 +140,29 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		bossType.setSelectedIndex(dat.getBoss());
 		bossType.addActionListener(this);
 		lightingList = new JComboBox<>(lightingTypes);
-		switch (dat.getLighting())
-		{
-			case "disabled":
-				lightingList.setSelectedIndex(0);
-				break;
-			case "normal":
-				lightingList.setSelectedIndex(1);
-				break;
-			case "outside":
-				lightingList.setSelectedIndex(2);
-				break;
-		}
+		//switch (dat.getLighting())
+		//{
+		//case "disabled":
+		//lightingList.setSelectedIndex(0);
+		//break;
+		//case "normal":
+		//lightingList.setSelectedIndex(1);
+		//break;
+		//case "outside":
+		//lightingList.setSelectedIndex(2);				these were commented out due to the fact they broke loading up freeware levels -Ragtime
+		//break;
+		//}
 		lightingList.addActionListener(this);
 		cameraList = new JComboBox<>(cameraTypes);
-		switch (dat.getCamera())
-		{
-			case "normal":
-				cameraList.setSelectedIndex(0);
-				break;
-			case "vertical only":
-				cameraList.setSelectedIndex(1);
-				break;
-		}
+		//switch (dat.getCamera())
+		//{
+		//case "normal":
+		//cameraList.setSelectedIndex(0);
+		//break;
+		//case "vertical only":
+		//cameraList.setSelectedIndex(1);
+		//break;
+		//}
 		cameraList.addActionListener(this);
 
 		c.setLayout(new GridLayout(0, 2));
@@ -248,7 +248,20 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 				//this.firePropertyChange(P_SCROLL, null, combo.getSelectedIndex());	
 			} else if (combo == bossType) {
 				dat.setBoss(combo.getSelectedIndex());
-				//this.firePropertyChange(P_LIGHTING, null, combo.getSelectedIndex());				
+				//this.firePropertyChange(P_LIGHTING, null, combo.getSelectedIndex());
+			} else if (combo == lightingList) {
+				switch (combo.getSelectedIndex())
+				{
+					case 0:
+						dat.setLighting("disabled");
+						break;
+					case 1:
+						dat.setLighting("normal");
+						break;
+					case 2:
+						dat.setLighting("outside");
+						break;
+				}
 			} else if (combo == cameraList) {
 				switch (combo.getSelectedIndex())
 				{

@@ -523,105 +523,59 @@ private File getStageDirectory(File directory)
 					cpxeInChan = cpxeInStream.getChannel();
 				}
 			}
-
 			ByteBuffer hBuf = ByteBuffer.allocate(6);
 			hBuf.order(ByteOrder.LITTLE_ENDIAN);
-
 			inChan.read(hBuf);
 			hBuf.flip();
 			int nEnt;
 			ByteBuffer eBuf;
-			pxeFormatVersion = hBuf.get(3);
-			switch (pxeFormatVersion) {
-			case 0: // original pxe
-				nEnt = hBuf.getShort(4);
-				eBuf = ByteBuffer.allocate(nEnt * 12 + 2);
-				eBuf.order(ByteOrder.LITTLE_ENDIAN);
-				inChan.read(eBuf);
-				eBuf.flip();
-				eBuf.getShort(); // discard this value
-				ByteBuffer cpxeBuf = null;
-				if (cpxeInChan != null) {
-					cpxeBuf = ByteBuffer.allocate(4 + nEnt * 24);
-					cpxeBuf.order(ByteOrder.LITTLE_ENDIAN);
-					cpxeInChan.read(cpxeBuf);
-					cpxeBuf.flip();
-					cpxeBuf.getInt();
-				}
-
-				for (int i = 0; i < nEnt; i++) {
-					int pxeX = eBuf.getShort();
-					int pxeY = eBuf.getShort();
-					int pxeFlagID = eBuf.getShort();
-					int pxeEvent = eBuf.getShort();
-					int pxeType = eBuf.getShort();
-					int pxeFlags = eBuf.getShort() & 0xFFFF;
-					int cv1 = 0, cv2 = 0, cv3 = 0, cv4 = 0, cv5 = 0, cv6 = 0;
-					if (cpxeBuf != null && cpxeBuf.remaining() >= 24) {
-						cv1 = cpxeBuf.getInt();
-						cv2 = cpxeBuf.getInt();
-						cv3 = cpxeBuf.getInt();
-						cv4 = cpxeBuf.getInt();
-						cv5 = cpxeBuf.getInt();
-						cv6 = cpxeBuf.getInt();
+			switch (hBuf.get(3)) {
+				case 0: // original pxe
+					nEnt = hBuf.getShort(4);
+					eBuf = ByteBuffer.allocate(nEnt * 12 + 2);
+					eBuf.order(ByteOrder.LITTLE_ENDIAN);
+					inChan.read(eBuf);
+					eBuf.flip();
+					eBuf.getShort(); // discard this value
+					for (int i = 0; i < nEnt; i++) {
+						int pxeX = eBuf.getShort();
+						int pxeY = eBuf.getShort();
+						int pxeFlagID = eBuf.getShort();
+						int pxeEvent = eBuf.getShort();
+						int pxeType = eBuf.getShort();
+						int pxeFlags = eBuf.getShort() & 0xFFFF;
+						PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, 1);
+						p.filePos = i;
+						pxeList.add(p);
 					}
-					PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, 1,
-							cv1, cv2, cv3, cv4, cv5, cv6);
-					p.filePos = i;
-					pxeList.add(p);
-				}
-				break;
-			case 0x10: // kss pxe
-				nEnt = hBuf.getShort(4);
-				eBuf = ByteBuffer.allocate(nEnt * 13 + 2);
-				eBuf.order(ByteOrder.LITTLE_ENDIAN);
-				inChan.read(eBuf);
-				eBuf.flip();
-				eBuf.getShort();
-				for (int i = 0; i < nEnt; i++) {
-					int pxeX = eBuf.getShort();
-					int pxeY = eBuf.getShort();
-					int pxeFlagID = eBuf.getShort();
-					int pxeEvent = eBuf.getShort();
-					int pxeType = eBuf.getShort();
-					int pxeFlags = eBuf.getShort();
-					byte pxeLayer = eBuf.get();
-					PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, pxeLayer);
-					p.filePos = i;
-					pxeList.add(p);
-				}
-				break;
-			case 0x20: // csdh pxe
-				nEnt = hBuf.getShort(4);
-				eBuf = ByteBuffer.allocate(nEnt * 15 + 2);
-				eBuf.order(ByteOrder.LITTLE_ENDIAN);
-				inChan.read(eBuf);
-				eBuf.flip();
-				eBuf.getShort();
-				for (int i = 0; i < nEnt; i++) {
-					int pxeX = eBuf.getShort();
-					int pxeY = eBuf.getShort();
-					int pxeFlagID = eBuf.getShort();
-					int pxeEvent = eBuf.getShort();
-					int pxeType = eBuf.getShort();
-					int pxeFlags = eBuf.getShort();
-					byte pxeLayer = eBuf.get();
-					int pxeCharOffset = eBuf.getShort();
-					PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, pxeLayer, pxeCharOffset);
-					p.filePos = i;
-					pxeList.add(p);
-				}
-				break;
-			default:
-				System.err.println(Messages.getString("MapInfo.15")); //$NON-NLS-1$
-				inChan.close();
-				inStream.close();
-				if (cpxeInChan != null) { cpxeInChan.close(); cpxeInStream.close(); }
-				throw new IOException();
+					break;
+				case 0x10: // kss pxe
+					nEnt = hBuf.getShort(4);
+					eBuf = ByteBuffer.allocate(nEnt * 13);
+					eBuf.order(ByteOrder.LITTLE_ENDIAN);
+					inChan.read(eBuf);
+					eBuf.flip();
+					for (int i = 0; i < nEnt; i++) {
+						int pxeX = eBuf.getShort();
+						int pxeY = eBuf.getShort();
+						int pxeFlagID = eBuf.getShort();
+						int pxeEvent = eBuf.getShort();
+						int pxeType = eBuf.getShort();
+						int pxeFlags = eBuf.getShort();
+						byte pxeLayer = eBuf.get();
+						PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, pxeLayer);
+						p.filePos = i;
+						pxeList.add(p);
+					}
+					break;
+				default:
+					System.err.println(Messages.getString("MapInfo.15")); //$NON-NLS-1$
+					inChan.close();
+					inStream.close();
+					throw new IOException();
 			}
 			inChan.close();
 			inStream.close();
-			if (cpxeInChan != null) { cpxeInChan.close(); cpxeInStream.close(); }
 		} catch (IOException e) {
 			System.err.println(Messages.getString("MapInfo.16") + getPXEFile(d, directory)); //$NON-NLS-1$
 		}
@@ -818,6 +772,22 @@ private File getStageDirectory(File directory)
 					srcImg = iMan.getImg(tileset);
 				else if (tilesetNum == 0x10) // npc myChar
 					srcImg = iMan.getImg(exeData.getMyCharFile());
+				else if (EditorApp.isCsdhMode() && tilesetNum == 0x18 && exeData.getNpcChar() != null)
+					srcImg = iMan.getImg(exeData.getNpcChar());
+				else if (EditorApp.isCsdhMode() && tilesetNum == 0x19 && exeData.getNpcLord() != null)
+					srcImg = iMan.getImg(exeData.getNpcLord());
+				else if (EditorApp.isCsdhMode() && tilesetNum == 0x1C && exeData.getNpcBllg() != null)
+					srcImg = iMan.getImg(exeData.getNpcBllg());
+				else if (EditorApp.isCsdhMode() && tilesetNum == 0x1D && exeData.getNpcFam() != null)
+					srcImg = iMan.getImg(exeData.getNpcFam());
+				else if (EditorApp.isCsdhMode() && tilesetNum == 0x1F && exeData.getNpcEzr() != null)
+					srcImg = iMan.getImg(exeData.getNpcEzr());
+				else if (tilesetNum == 0x19 && exeData.getAutumnObjectsFile() != null)
+					srcImg = iMan.getImg(exeData.getAutumnObjectsFile());
+				else if (tilesetNum == 0x26 && exeData.getAutumnItemsFile() != null)
+					srcImg = iMan.getImg(exeData.getAutumnItemsFile());
+				else if (tilesetNum == 0x27 && exeData.getAutumnCharactersFile() != null)
+					srcImg = iMan.getImg(exeData.getAutumnCharactersFile());
 				else
 					srcImg = null;
 
