@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.nio.file.Files;
 
 public class GameInfo {
 	//Map list variables
@@ -1040,9 +1041,23 @@ public class GameInfo {
 			//now read supplementary info from metadata file
 			File entityInfoFile = EditorConfigDialog.isAutumnalLabEnabled()
 					? new File("aut/entityInfo.txt") //$NON-NLS-1$
-					: new File("entityInfo.txt"); //$NON-NLS-1$
+					: new File(dataDir, ".dogstudio/entityInfo.txt"); //$NON-NLS-1$
+
+			if (!entityInfoFile.exists()) {
+				System.out.println("Loaded default entityInfo");
+
+				try (InputStream is = EditorApp.class.getResourceAsStream(
+						"/ca/noxid/lab/rsrc/default_entityInfo.txt")) {
+
+					if (is != null) {
+						Files.copy(is, entityInfoFile.toPath());
+					}
+				}
+			}
+
 			Scanner sc = new Scanner(entityInfoFile);
 			int lineNum = 0;
+
 			while (sc.hasNextLine()) {
 				String line = sc.nextLine();
 				lineNum++;
@@ -1573,8 +1588,8 @@ public class GameInfo {
 	
 	public void saveEntityInfo() {
 		boolean autMode = EditorConfigDialog.isAutumnalLabEnabled();
-		File infoFile = autMode ? new File("aut/entityInfo.txt") : new File("entityInfo.txt"); //$NON-NLS-1$ //$NON-NLS-2$
-		File backup   = autMode ? new File("aut/entityInfo_backup.txt") : new File("entityInfo_backup.txt"); //$NON-NLS-1$ //$NON-NLS-2$
+		File infoFile = autMode ? new File("aut/entityInfo.txt") : new File(dataDir, ".dogstudio/entityInfo.txt"); //$NON-NLS-1$ //$NON-NLS-2$
+		File backup   = autMode ? new File("aut/entityInfo_backup.txt") : new File(dataDir, ".dogstudio/entityInfo_backup.txt"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (autMode) {
 			infoFile.getParentFile().mkdirs();
 		}
@@ -2018,7 +2033,7 @@ public class GameInfo {
 		}
 		return d;
 	}
-	
+
 	public Mapdata duplicateMap(int selectedIndex) {
 		Mapdata nd = null;
 		if (selectedIndex >= 0 && selectedIndex < mapdataStore.size()) {

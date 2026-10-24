@@ -201,7 +201,7 @@ private File getStageDirectory(File directory)
 	{
 		return getTilesetFile(d, directory, "Prt", exeData.getImgExtension()); //$NON-NLS-1$
 	}
-	
+
 	public MapInfo(GameInfo eDat, ResourceManager r, int mapNum) {
 		this(eDat, r, eDat.getMapdata(mapNum), false);
 	}
@@ -209,7 +209,7 @@ private File getStageDirectory(File directory)
 	public MapInfo(GameInfo eDat, ResourceManager r, Mapdata d) {
 		this(eDat, r, d, true);
 	}
-	
+
 	private MapInfo(GameInfo eDat, ResourceManager r, Mapdata d, boolean temp) {
 		pcs = new PropertyChangeSupport(this);
 		isTemp = temp;
@@ -1377,12 +1377,15 @@ private File getStageDirectory(File directory)
 			err.printStackTrace();
 		}
 
+
 		// save the entities
 		try {
 			// sort by order
 			Collections.sort(pxeList);
 			FileOutputStream out = new FileOutputStream(pxeFile);
 			FileChannel pxeChannel = out.getChannel();
+			headerBuf = ByteBuffer.wrap(pxeTag);
+			pxeChannel.write(headerBuf);
 			ByteBuffer dumbBuf = ByteBuffer.allocate(4);
 			dumbBuf.order(ByteOrder.LITTLE_ENDIAN);
 			dumbBuf.putShort((short) pxeList.size());

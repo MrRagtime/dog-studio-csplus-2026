@@ -1,5 +1,6 @@
 package ca.noxid.lab;
 
+import ca.noxid.lab.discord.DiscordRpcHandler;
 import ca.noxid.lab.rsrc.ResourceManager;
 import ca.noxid.lab.script.TscCommand;
 import ca.noxid.uiComponents.BgPanel;
@@ -26,6 +27,8 @@ public class EditorConfigDialog extends JDialog {
 	private static final String PREF_ENABLE_CK = "enable_ck";
 	private static final String PREF_DISABLE_EDITOR_RECT = "disable_editor_rect";
 	private static final String PREF_SCROLL_SPEED = "scroll_speed";
+	private static final String PREF_DISCORD_RPC = "discord_rpc";
+	private static DiscordRpcHandler discordRpcHandler;
 
 	public static String getScrollSpeed() {
 		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
@@ -53,6 +56,16 @@ public class EditorConfigDialog extends JDialog {
 	private static void setSfxEnabled(boolean enabled) {
 		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
 		prefs.putBoolean(PREF_PLAY_SFX, enabled);
+	}
+
+	public static boolean isRPCEnabled() {
+		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
+		return prefs.getBoolean(PREF_DISCORD_RPC, true);
+	}
+
+	private static void setRPCEnabled(boolean enabled) {
+		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
+		prefs.putBoolean(PREF_DISCORD_RPC, enabled);
 	}
 
 	public static boolean isWarnScriptErrors() {
@@ -297,7 +310,7 @@ public class EditorConfigDialog extends JDialog {
 			cardLayout.show(contentPanel, category);
 		}
 	}
-	
+
 	private JPanel createGeneralConfigPanel() {
 		JPanel panel = new BgPanel(iMan.getImg(ResourceManager.rsrcBgBlue));
 		panel.setLayout(new GridBagLayout());
@@ -362,6 +375,14 @@ public class EditorConfigDialog extends JDialog {
 		disableEditorRectCheck.addActionListener(e -> setEditorRectDisabled(disableEditorRectCheck.isSelected()));
 		panel.add(disableEditorRectCheck, c);
 
+		c.gridy++;
+		JCheckBox DiscordLabel = new JCheckBox("Discord RPC");
+		DiscordLabel.setOpaque(false);
+		DiscordLabel.setSelected(isRPCEnabled());
+		DiscordLabel.addActionListener(e -> setRPCEnabled(DiscordLabel.isSelected()));
+		panel.add(DiscordLabel, c);
+		markRestartRequired();
+
 		// lethrys slop
 		JPanel scrollPanel = new JPanel();
 		scrollPanel.setOpaque(false);
@@ -410,7 +431,7 @@ public class EditorConfigDialog extends JDialog {
 		panel.add(scrollPanel, sc);
 
 		c.gridx = 0;
-		c.gridy = 6;
+		c.gridy = 8;
 		c.gridwidth = 2;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.VERTICAL;

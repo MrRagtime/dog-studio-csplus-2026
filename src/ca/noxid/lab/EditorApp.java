@@ -37,8 +37,7 @@
 
 package ca.noxid.lab;
 
-import ca.noxid.lab.discord.DiscordRPC;
-
+import ca.noxid.lab.discord.DiscordRpcHandler;
 import ca.noxid.lab.entity.EntityData;
 import ca.noxid.lab.entity.EntityPane;
 import ca.noxid.lab.entity.EntitySettingsPanel;
@@ -95,7 +94,7 @@ public class EditorApp extends JFrame implements ActionListener {
 	private static final String VER_NUM = ""; //$NON-NLS-1$
 	private static final String TITLE_STR = "Dog Studio" + VER_NUM;
 	private static final String ABOUT_STR = Messages.getString("EditorApp.1") + VER_NUM + "\n" + //$NON-NLS-1$ //$NON-NLS-2$
-			"By Noxid, Sam & K, Autumn, Enlight, and Others - 7/12/2026\n" + //$NON-NLS-1$
+			"By Noxid, Sam & K, Dr. Ragtime, Autumn, Enlight, and Others - 10/23/2026\n" + //$NON-NLS-1$
 			Messages.getString("EditorApp.4") + //$NON-NLS-1$
 			Messages.getString("EditorApp.5"); //$NON-NLS-1$
 
@@ -187,6 +186,8 @@ public class EditorApp extends JFrame implements ActionListener {
 	private boolean movingMapdata = false; // for right click map list -> move
 	private int moveIndex = 0;
 	public static Logger logger;
+	public static DiscordRpcHandler rpc = new DiscordRpcHandler();
+
 
 	private GameInfo exeData;
 	private static EditorApp instance;
@@ -2907,8 +2908,13 @@ public class EditorApp extends JFrame implements ActionListener {
 			}
 		} else if (e.getActionCommand().equals("FileMenu_UnloadMod")) {
 			airhorn();
-			if (exeData != null)
-				if (!saveAll(true))
+			if (exeData != null) {
+				System.out.println("Loaded default entityInfo");
+				InputStream is = EditorApp.class.getResourceAsStream(
+						"/ca/noxid/lab/rsrc/default_entityInfo.txt"
+				);
+			}
+			if (!saveAll(true))
 					return;
 			purgeData();
 			exeData = null;
