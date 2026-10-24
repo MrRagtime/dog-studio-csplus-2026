@@ -11,6 +11,8 @@ I’m going to assume you’re familiar with Booster’s Lab. If not, that’s o
 
 - **Customizable Themes**  
   - You can easily create and switch between themes. The lab is now yours!
+- **Discord RPC**  
+  - Showcase your love for this Editor!!
 - **Cave Story+ 2026 Support**  
   - Now you can finally use Dog Booster instead of the Booster's Lab Fork.
 - **Recent Files**  
