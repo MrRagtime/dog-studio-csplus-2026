@@ -4,4 +4,5 @@ module boostlab {
 	requires java.prefs;
 	requires java.scripting;
 	requires com.fasterxml.jackson.databind;
+	requires discord.rpc;
 }
