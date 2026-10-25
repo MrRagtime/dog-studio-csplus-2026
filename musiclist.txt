@@ -40,3 +40,7 @@
 0039 Seal Chamber
 0040 Toroko's Theme
 0041 White
+0042 Wind Fortress
+0043 Last Cave (Hidden)
+0044 Mischievous Robot (Ending)
+0045 Ikacha
