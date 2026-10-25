@@ -369,7 +369,7 @@ public class EditorConfigDialog extends JDialog {
 		panel.add(colorAndKeyCheck, c);
 
 		c.gridy++;
-		JCheckBox disableEditorRectCheck = new JCheckBox("Disable Editor.rect");
+		JCheckBox disableEditorRectCheck = new JCheckBox("Disable 'Editor.rect'");
 		disableEditorRectCheck.setOpaque(false);
 		disableEditorRectCheck.setSelected(isEditorRectDisabled());
 		disableEditorRectCheck.addActionListener(e -> setEditorRectDisabled(disableEditorRectCheck.isSelected()));
@@ -382,6 +382,38 @@ public class EditorConfigDialog extends JDialog {
 		DiscordLabel.addActionListener(e -> setRPCEnabled(DiscordLabel.isSelected()));
 		panel.add(DiscordLabel, c);
 		markRestartRequired();
+
+		c.gridy++;
+
+		JPanel AutosavePanel = new JPanel();
+		AutosavePanel.setOpaque(false);
+		AutosavePanel.setLayout(new BoxLayout(AutosavePanel, BoxLayout.Y_AXIS));
+
+		JLabel AutosaveLabel = new JLabel("Autosave (Work in Progress)");
+
+		AutosaveLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		AutosavePanel.add(AutosaveLabel);
+		AutosavePanel.add(Box.createVerticalStrut(4));
+
+		ButtonGroup AutosaveGroup = new ButtonGroup();
+		JRadioButton twoRadio   = new JRadioButton("2 Minute");
+		JRadioButton fiveRadio = new JRadioButton("5 Minutes");
+		JRadioButton fifteenRadio   = new JRadioButton("15 Minutes");
+		JRadioButton offRadio   = new JRadioButton("Off");
+		twoRadio.setOpaque(false);
+		fiveRadio.setOpaque(false);
+		fifteenRadio.setOpaque(false);
+		twoRadio.setAlignmentX(Component.LEFT_ALIGNMENT);
+		fiveRadio.setAlignmentX(Component.LEFT_ALIGNMENT);
+		fifteenRadio.setAlignmentX(Component.LEFT_ALIGNMENT);
+		AutosaveGroup.add(twoRadio);
+		AutosaveGroup.add(fiveRadio);
+		AutosaveGroup.add(fifteenRadio);
+
+		AutosaveLabel.add(twoRadio);
+		AutosaveLabel.add(fiveRadio);
+		AutosaveLabel.add(fifteenRadio);
+		AutosaveLabel.add(offRadio);
 
 		// lethrys slop
 		JPanel scrollPanel = new JPanel();
@@ -431,7 +463,7 @@ public class EditorConfigDialog extends JDialog {
 		panel.add(scrollPanel, sc);
 
 		c.gridx = 0;
-		c.gridy = 8;
+		c.gridy = 6;
 		c.gridwidth = 2;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.VERTICAL;

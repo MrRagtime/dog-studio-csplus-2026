@@ -1,8 +1,10 @@
 package ca.noxid.lab.mapdata;
 import ca.noxid.lab.BlConfig;
 import ca.noxid.lab.Changeable;
+import ca.noxid.lab.EditorApp;
 import ca.noxid.lab.Messages;
 import ca.noxid.lab.gameinfo.GameInfo;
+import ca.noxid.lab.rsrc.ResourceManager;
 import ca.noxid.uiComponents.BgPanel;
 import ca.noxid.uiComponents.LenLimitDoc;
 import ca.noxid.uiComponents.UpdateTextField;
@@ -18,7 +20,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 	private static final long serialVersionUID = -1064501567760708361L;
 	private Mapdata dat;
 	//private GameInfo exeDat; 
-	
+
 	private UpdateTextField nameField;
 	private UpdateTextField fileField;
 	//private JTextField xField;
@@ -32,6 +34,8 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 	private JComboBox<String> bossType;
 	private JComboBox<String> lightingList;
 	private JComboBox<String> cameraList;
+
+	private GameInfo exeData;
 
 	private boolean shouldWarn;
 	private boolean changed;
@@ -71,7 +75,11 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		Messages.getString("MapdataPane.40"), //$NON-NLS-1$
 		Messages.getString("MapdataPane.41"), //$NON-NLS-1$
 	};
-	
+
+	public BlConfig getConfig() {
+		return exeData.getConfig();
+	}
+
 	public Mapdata getMapdata() {return dat;}
 
 	public MapdataPane(GameInfo i, int mapNum, BufferedImage img, boolean warn) {
@@ -140,29 +148,33 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		bossType.setSelectedIndex(dat.getBoss());
 		bossType.addActionListener(this);
 		lightingList = new JComboBox<>(lightingTypes);
-		//switch (dat.getLighting())
-		//{
-		//case "disabled":
-		//lightingList.setSelectedIndex(0);
-		//break;
-		//case "normal":
-		//lightingList.setSelectedIndex(1);
-		//break;
-		//case "outside":
-		//lightingList.setSelectedIndex(2);				these were commented out due to the fact they broke loading up freeware levels -Ragtime
-		//break;
-		//}
+		if (EditorApp.EDITOR_MODE != 0) {
+			switch (dat.getLighting())
+			{
+			case "disabled":
+			lightingList.setSelectedIndex(0);
+			break;
+			case "normal":
+			lightingList.setSelectedIndex(1);
+			break;
+			case "outside":
+			lightingList.setSelectedIndex(2);
+			break;
+			}
+		}
 		lightingList.addActionListener(this);
 		cameraList = new JComboBox<>(cameraTypes);
-		//switch (dat.getCamera())
-		//{
-		//case "normal":
-		//cameraList.setSelectedIndex(0);
-		//break;
-		//case "vertical only":
-		//cameraList.setSelectedIndex(1);
-		//break;
-		//}
+		if (EditorApp.EDITOR_MODE != 0) {
+			switch (dat.getCamera())
+			{
+			case "normal":
+			cameraList.setSelectedIndex(0);
+			break;
+			case "vertical only":
+			cameraList.setSelectedIndex(1);
+			break;
+			}
+		}
 		cameraList.addActionListener(this);
 
 		c.setLayout(new GridLayout(0, 2));
@@ -188,7 +200,11 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		c.add(bossType);
 		c.add(new JLabel(Messages.getString("MapdataPane.35"))); //$NON-NLS-1$
 		c.add(new JLabel(Messages.getString("MapdataPane.39"))); //$NON-NLS-1$
+
+		c.add(lightingList);
+
 		c.add(cameraList);
+
 	}
 	
 	public boolean allFieldsCommitted() {
@@ -262,6 +278,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 						dat.setLighting("outside");
 						break;
 				}
+				//this.firePropertyChange(P_LIGHTING, null, combo.getSelectedIndex());
 			} else if (combo == cameraList) {
 				switch (combo.getSelectedIndex())
 				{

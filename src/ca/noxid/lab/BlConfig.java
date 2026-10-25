@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -142,13 +143,20 @@ public class BlConfig {
 		}
 	}
 
-	public BlConfig(File configFolder, GameInfo.MOD_TYPE type) {
+	public BlConfig(File configFolder, GameInfo.MOD_TYPE type, File dataDir) {
 		configFile = solveLegacyDirectory(configFolder);
 		if (type == GameInfo.MOD_TYPE.MOD_CS) {
 			tileSize = 16;
 		} else if (type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2011) {
-			tileSize = 32;
-			entityResolution = 32;
+			File nicalisFile = new File(dataDir, "Nicalis.bmp");
+
+			if (nicalisFile.exists()) {
+				tileSize = 32;
+				entityResolution = 32;
+			} else {
+				tileSize = 16;
+				entityResolution = 16;
+			}
 		} else if (type == GameInfo.MOD_TYPE.MOD_CS_PLUS_2026) {
 			// Double resolution // TODO: Arbitrary resolutions
 			tileSize = 32;

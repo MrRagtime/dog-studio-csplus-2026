@@ -435,6 +435,7 @@ public class Mapdata implements Changeable {
 		nd.npcSet2 = this.npcSet2;
 		nd.scrollType = this.scrollType;
 		nd.tilesetName = this.tilesetName;
+		nd.lighting = this.lighting;
 		nd.camera = this.camera;
 		
 		String mn = this.fileName;

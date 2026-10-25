@@ -60,6 +60,7 @@ import com.carrotlord.string.StrTools;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -78,6 +79,11 @@ import java.util.*;
 import java.util.List;
 import java.util.logging.*;
 import java.util.prefs.Preferences;
+import javax.swing.Timer;
+import java.io.IOException;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Files;
+import java.io.File;
 
 // import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -502,7 +508,7 @@ public class EditorApp extends JFrame implements ActionListener {
 				}
 			}
 		}
-		if (exeData.areUnsavedChanges()) {
+		if (exeData != null && exeData.areUnsavedChanges()) {
 			int response = JOptionPane.showConfirmDialog(rootPane, Messages.getString("EditorApp.44") + //$NON-NLS-1$
 					Messages.getString("EditorApp.45"), Messages.getString("EditorApp.46"), JOptionPane.YES_NO_OPTION); // $NON-NLS-1$
 																														// //$NON-NLS-2$
@@ -3029,9 +3035,14 @@ public class EditorApp extends JFrame implements ActionListener {
 
 	// Load mod
 
+	private Timer autoSaveTimer;
+
 	public void loadFile(File selected) throws IOException {
 		purgeData(); // clean up any old tabs
 		exeData = new GameInfo(selected);
+
+		exeData.startAutoSave(); // I think the "exeData." part is what keeps it from not working but removing it causes issues. - Dr. Ragtime
+
 		exeData.loadImages(iMan);
 		mapSearchQuery = "";
 		refreshMapList();

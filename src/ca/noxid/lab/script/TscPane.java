@@ -976,6 +976,25 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			}
 			break;
 		}
+			case 'k': {
+				if (!EditorApp.isColorAndKeyEnabled()) {
+					break;
+				}
+				try {
+					float assumedScale = exeDat.getConfig().getTileSize() / 16f;
+					ImageIcon keyItemImage = new ImageIcon(
+							rm.getImg(exeDat.getKeyItemImageFile())
+									.getSubimage((int) (32 * assumedScale) * (fArgNum % 8),
+											(int) (16 * assumedScale) * (fArgNum / 8),
+											(int) (32 * assumedScale),
+											(int) (16 * assumedScale)));
+					JLabel label = new JLabel(keyItemImage);
+					label.setBackground(Color.black);
+					label.setOpaque(true);
+					jp.add(label);
+				} catch (Exception ignored) {}
+				break;
+			}
 		// Item
 		case 'i': {
 			try {
@@ -1460,7 +1479,7 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 					}
 				}
 			}
-			
+
 			//now read the input as a text
 			//saveRawCharData(datArray, scriptFile);
 

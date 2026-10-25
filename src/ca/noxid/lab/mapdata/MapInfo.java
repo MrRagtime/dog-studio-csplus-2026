@@ -328,6 +328,10 @@ private File getStageDirectory(File directory)
 				lineCount.order(ByteOrder.LITTLE_ENDIAN);
 				inChan.read(lineCount);
 				int nLines = lineCount.getInt(0);
+				lineBuf = ByteBuffer.allocate(nLines * 20); // 5 ints per line, 4 bytes per int
+				lineBuf.order(ByteOrder.LITTLE_ENDIAN);
+				inChan.read(lineBuf);
+				lineBuf.flip();
 			}
 			if (pxmVersion >= 0x32) {
 				ByteBuffer polyCount = ByteBuffer.allocate(8);
@@ -345,7 +349,8 @@ private File getStageDirectory(File directory)
 			mapBuf.flip();
 
 		} catch (IOException e) {
-			StrTools.msgBox(Messages.getString("MapInfo.10") + getPXMFile(d, directory)); //$NON-NLS-1$
+			StrTools.msgBox(Messages.getString("MapInfo.10") + directory + "/Stage/" + d.getFile() //$NON-NLS-1$ //$NON-NLS-2$
+					+ ".pxm"); //$NON-NLS-1$
 			mapX = 21;
 			mapY = 16;
 			if (EditorApp.EDITOR_MODE == 0) {
@@ -509,7 +514,7 @@ private File getStageDirectory(File directory)
 
 		pxeList = new LinkedList<>();
 		try {
-			File currentFile = getPXEFile(d, directory);
+			File currentFile = new File(directory + "/Stage/" + d.getFile() + ".pxe"); //$NON-NLS-1$ //$NON-NLS-2$
 			currentFile = ResourceManager.checkBase(currentFile);
 			FileInputStream inStream = new FileInputStream(currentFile);
 			FileChannel inChan = inStream.getChannel();
@@ -523,12 +528,15 @@ private File getStageDirectory(File directory)
 					cpxeInChan = cpxeInStream.getChannel();
 				}
 			}
+
 			ByteBuffer hBuf = ByteBuffer.allocate(6);
 			hBuf.order(ByteOrder.LITTLE_ENDIAN);
+
 			inChan.read(hBuf);
 			hBuf.flip();
 			int nEnt;
 			ByteBuffer eBuf;
+			pxeFormatVersion = hBuf.get(3);
 			switch (hBuf.get(3)) {
 				case 0: // original pxe
 					nEnt = hBuf.getShort(4);
@@ -537,6 +545,15 @@ private File getStageDirectory(File directory)
 					inChan.read(eBuf);
 					eBuf.flip();
 					eBuf.getShort(); // discard this value
+					ByteBuffer cpxeBuf = null;
+					if (cpxeInChan != null) {
+						cpxeBuf = ByteBuffer.allocate(4 + nEnt * 24);
+						cpxeBuf.order(ByteOrder.LITTLE_ENDIAN);
+						cpxeInChan.read(cpxeBuf);
+						cpxeBuf.flip();
+						cpxeBuf.getInt();
+					}
+
 					for (int i = 0; i < nEnt; i++) {
 						int pxeX = eBuf.getShort();
 						int pxeY = eBuf.getShort();
@@ -544,7 +561,17 @@ private File getStageDirectory(File directory)
 						int pxeEvent = eBuf.getShort();
 						int pxeType = eBuf.getShort();
 						int pxeFlags = eBuf.getShort() & 0xFFFF;
-						PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, 1);
+						int cv1 = 0, cv2 = 0, cv3 = 0, cv4 = 0, cv5 = 0, cv6 = 0;
+						if (cpxeBuf != null && cpxeBuf.remaining() >= 24) {
+							cv1 = cpxeBuf.getInt();
+							cv2 = cpxeBuf.getInt();
+							cv3 = cpxeBuf.getInt();
+							cv4 = cpxeBuf.getInt();
+							cv5 = cpxeBuf.getInt();
+							cv6 = cpxeBuf.getInt();
+						}
+						PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, 1,
+								cv1, cv2, cv3, cv4, cv5, cv6);
 						p.filePos = i;
 						pxeList.add(p);
 					}
@@ -568,16 +595,37 @@ private File getStageDirectory(File directory)
 						pxeList.add(p);
 					}
 					break;
+				case 0x20: // csdh pxe
+					nEnt = hBuf.getShort(4);
+					eBuf = ByteBuffer.allocate(nEnt * 15 + 2);
+					eBuf.order(ByteOrder.LITTLE_ENDIAN);
+					inChan.read(eBuf);
+					eBuf.flip();
+					eBuf.getShort();
+					for (int i = 0; i < nEnt; i++) {
+						int pxeX = eBuf.getShort();
+						int pxeY = eBuf.getShort();
+						int pxeFlagID = eBuf.getShort();
+						int pxeEvent = eBuf.getShort();
+						int pxeType = eBuf.getShort();
+						int pxeFlags = eBuf.getShort();
+						byte pxeLayer = eBuf.get();
+						int pxeCharOffset = eBuf.getShort();
+						PxeEntry p = new PxeEntry(pxeX, pxeY, pxeFlagID, pxeEvent, pxeType, pxeFlags, pxeLayer, pxeCharOffset);
+						p.filePos = i;
+						pxeList.add(p);
+					}
 				default:
 					System.err.println(Messages.getString("MapInfo.15")); //$NON-NLS-1$
 					inChan.close();
 					inStream.close();
+					if (cpxeInChan != null) { cpxeInChan.close(); cpxeInStream.close(); }
 					throw new IOException();
 			}
 			inChan.close();
 			inStream.close();
 		} catch (IOException e) {
-			System.err.println(Messages.getString("MapInfo.16") + getPXEFile(d, directory)); //$NON-NLS-1$
+			System.err.println(Messages.getString("MapInfo.16") + directory + "/Stage/" + d.getFile()); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1241,16 +1289,17 @@ private File getStageDirectory(File directory)
 			d = exeData.getMapdataTemp(mapNumber);
 		File pxmFile;
 		if (EditorApp.EDITOR_MODE == 2) {
-			pxmFile = getNXMFile(d, exeData.getDataDirectory());
+			pxmFile = new File(exeData.getDataDirectory() + "/Stage/" + d.getFile() + ".nxm"); //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
-			pxmFile = getPXMFile(d, exeData.getDataDirectory());
+			pxmFile = new File(exeData.getDataDirectory() + "/Stage/" + d.getFile() + ".pxm"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		File pxeFile = getPXEFile(d, exeData.getDataDirectory());
+		File pxeFile = new File(exeData.getDataDirectory() + "/Stage/" + d.getFile() + ".pxe"); //$NON-NLS-1$ //$NON-NLS-2$
 		// we can just use our pxaFile field for this, since that's already corrected for CS+
-		//File pxaFile = new File(getPXAPath(d, exeData.getDataDirectory()));
+		//File pxaFile = new File(exeData.getDataDirectory() + "/Stage/" + d.getTileset() + ".pxa"); //$NON-NLS-1$ //$NON-NLS-2$
 		byte[] pxmTag = { 'P', 'X', 'M', 0x10 };
 		byte[] xpxmTag = { 'X', 'P', 'X', 'M', 0, 0x10 };
-		byte[] pxeTag = { 'P', 'X', 'E', 0 };
+		byte pxeVersion = getPxeVersionToWrite();
+		byte[] pxeTag = { 'P', 'X', 'E', pxeVersion };
 		ByteBuffer headerBuf;
 		ByteBuffer mapBuf;
 
@@ -1385,6 +1434,7 @@ private File getStageDirectory(File directory)
 			FileOutputStream out = new FileOutputStream(pxeFile);
 			FileChannel pxeChannel = out.getChannel();
 			headerBuf = ByteBuffer.wrap(pxeTag);
+			byte[] pxeTagBytes = new byte[]{ 'P', 'X', 'E', pxeVersion };
 			pxeChannel.write(headerBuf);
 			ByteBuffer dumbBuf = ByteBuffer.allocate(4);
 			dumbBuf.order(ByteOrder.LITTLE_ENDIAN);
@@ -1420,6 +1470,8 @@ private File getStageDirectory(File directory)
 				e.printStackTrace();
 			}
 		}
+
+		pxeFormatVersion = pxeVersion;
 
 		// save the pxa
 		if (EditorApp.EDITOR_MODE != 2)

@@ -15,16 +15,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import javax.swing.Timer;
 import java.awt.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
-import java.nio.file.Files;
 
 public class GameInfo {
 	//Map list variables
@@ -189,7 +187,8 @@ public class GameInfo {
 			else
 				defaultImageExt = ".bmp";
 		}
-		gameConfig = new BlConfig(dataDir, type);
+        File configFolder = new File(dataDir,"backup");
+        gameConfig = new BlConfig(configFolder, type, dataDir);
 		String imageExtension = gameConfig.getImageExtension();
 		if (".pbm".equals(imageExtension))
 			gameConfig.setImageExtension((imageExtension = defaultImageExt));
@@ -417,7 +416,9 @@ public class GameInfo {
 				"ScriptSource" + File.separator + currentMap.getFile() + ".txt");  //$NON-NLS-1$ //$NON-NLS-2$
 		return ResourceManager.checkBase(source);
 	}
-	
+
+	private GameInfo exeData;
+
 	public String getShortName(int map) {
 		return mapdataStore.get(map).getFile();
 	}	
@@ -1139,7 +1140,52 @@ public class GameInfo {
 		}
 		populateCategoryLists();
 	}
-	
+
+	public GameInfo getGameInfo() {
+		return exeData;
+	}
+
+	public void startAutoSave() {
+		javax.swing.Timer autoSaveTimer = new Timer(5_000, e -> {
+			if (exeData != null && exeData.areUnsavedChanges()) {
+				autoSave();
+			}
+		});
+
+		autoSaveTimer.start();
+	}
+
+	private void autoSave() { // - Dr. Ragtime: Way too confusing for me to add right now...
+		try {
+			if (mapdataStore == null || mapdataStore.isEmpty())
+				return;
+			for (Mapdata d : mapdataStore) {
+				mapdataStore = new Vector<>();
+				String subDir = "/backup/";
+
+				String backupPath = dataDir + subDir + d.getFile() + ".tsc";
+				File backupFile = new File(backupPath);
+
+				File scriptFile = new File(
+						dataDir + "/Stage/" + d.getFile() + ".tsc"
+				);
+
+				if (scriptFile.exists()) {
+					backupFile.getParentFile().mkdirs();
+
+					Files.copy(
+							scriptFile.toPath(),
+							backupFile.toPath(),
+							StandardCopyOption.REPLACE_EXISTING
+					);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void populateCategoryLists() {
 		categoryMap = new HashMap<>();
 		EntityCategory allCat = new EntityCategory();
@@ -1632,7 +1678,7 @@ public class GameInfo {
 		sc.close();
 		return new Rectangle(l, u, r, d);
 	}
-	
+
 	private String rect2Str(Rectangle r) {
 		return "" + r.x + ":" + r.y + ":" + r.width + ":" + r.height;
 	}
@@ -1761,6 +1807,11 @@ public class GameInfo {
 		Mapdata dat = mapdataStore.get(map);
 		if (!dat.isModified())
 			return; //short-circuit
+		File tblFile;
+		FileInputStream inStream = null;
+		FileOutputStream oStream = null;
+		FileChannel chan;
+		int mapdataSize;
 		if (type == MOD_TYPE.MOD_CS_PLUS_2026) {
 			Path path = Paths.get(getSplitStageTablePath(map));
 
@@ -1796,11 +1847,6 @@ public class GameInfo {
 				StrTools.msgBox(Messages.getString("GameInfo.50")); //$NON-NLS-1$
 			}
 		} else {
-			File tblFile;
-			FileInputStream inStream = null;
-			FileOutputStream oStream = null;
-			FileChannel chan;
-			int mapdataSize;
 			if (type == MOD_TYPE.MOD_CS_PLUS_2011) {
 				tblFile = new File(dataDir + "/stage.tbl"); //$NON-NLS-1$
 				mapdataSize = 229;
@@ -1821,10 +1867,10 @@ public class GameInfo {
 				int newPos;
 				if (type == MOD_TYPE.MOD_CS_PLUS_2011) {
 					dBuf = ByteBuffer.allocate(mapdataStore.size() * mapdataSize);
-					newPos = map * mapdataSize;
+					newPos = map*mapdataSize;
 				} else {
 					dBuf = ByteBuffer.allocate(mapdataStore.size() * mapdataSize + 4);
-					newPos = map * mapdataSize + 4;
+					newPos = map*mapdataSize + 4;
 				}
 				dBuf.order(ByteOrder.LITTLE_ENDIAN);
 				chan.read(dBuf);
@@ -1841,12 +1887,12 @@ public class GameInfo {
 				StrTools.msgBox(Messages.getString("GameInfo.53") + tblFile); //$NON-NLS-1$
 				err.printStackTrace();
 			}
-			dat.markUnchanged(); //I may regret doing this early
-			if (inStream != null)
-				inStream.close();
-			if (oStream != null)
-				oStream.close();
 		}
+		dat.markUnchanged(); //I may regret doing this early
+		if (inStream != null)
+			inStream.close();
+		if (oStream != null)
+			oStream.close();
 	}
 	
 	public void exportMapdata(String outFilename, MOD_TYPE format) throws IOException {
@@ -2172,6 +2218,10 @@ public class GameInfo {
 			String subDir = "/Stage/"; //$NON-NLS-1$
 			String sourcePath = dataDir + subDir + d.getFile() + ".tsc"; //$NON-NLS-1$
 			File sourceFile = new File(sourcePath);
+
+			String backupPath = dataDir + "/backup/" + d.getFile() + ".tsc";
+			File backupFile = new File(backupPath);
+
 			if (!sourceFile.exists()) //make sure it's actually there before we go at it
 				continue;
 			//parse the file
@@ -2278,6 +2328,10 @@ public class GameInfo {
 			String subDir = "/Stage/"; //$NON-NLS-1$
 			String sourcePath = dataDir + subDir + d.getFile() + ".tsc"; //$NON-NLS-1$
 			File sourceFile = new File(sourcePath);
+
+			String backupPath = dataDir + "/backup/" + d.getFile() + ".tsc";
+			File backupFile = new File(backupPath);
+
 			if (!sourceFile.exists()) //make sure it's actually there before we go at it
 				continue;
 			//parse the file
@@ -2363,6 +2417,10 @@ public class GameInfo {
 			File scriptFile = new File(scriptPath);
 			String sourcePath = dataDir + subDir + "/ScriptSource/" + d.getFile() + ".txt"; //$NON-NLS-1$ //$NON-NLS-2$
 			File sourceFile = new File(sourcePath);
+
+			String backupPath = dataDir + "/backup/" + d.getFile() + ".tsc";
+			File backupFile = new File(backupPath);
+
 			if (!scriptFile.exists()) //make sure it's actually there before we go at it
 				continue;
 			//read its contents
