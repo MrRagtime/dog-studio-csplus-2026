@@ -88,12 +88,57 @@ I’m going to assume you’re familiar with Booster’s Lab. If not, that’s o
 - **Warning Prompt**  
   - When saving or closing a warning will appear.
 
-
-
 # Contributing
 If you are planning to contribute a change, please open an issue in github's issue tracker so I can let you know
 whether it fits into the project roadmap. All merge requests are subject to code review. Please at least approximately
 follow standard Java naming and bracket conventions etc. and use tabs for indentation.
+
+# Organization
+The project's source files are separated into several packages, each grouping approximately similar functional
+units of the editor.
+
+- **ca.noxid.uiComponents**
+  - A collection of Swing components extended to have slightly different behaviour or, more often than not, textured backgrounds.
+- **ca.noxid.lab**
+  - Contains the main class, `EditorApp`, and several other classes that haven't been given a more specific category.
+  - **ca.noxid.lab.entity**
+    - Classes relating to the Entity view, including the npc.tbl editor
+  - **ca.noxid.lab.gameinfo**
+    - Classes that manipulate the Cave Story executable, and classes that contain information about the state
+      of the game/project
+  - **ca.noxid.lab.mapdata**
+    - relating specifically to the metadata of each specific map (e.g. which tileset it uses, what its name is, etc)
+  - **ca.noxid.lab.rsrc**
+    - holds all static resources used by the program such as images and default files, as well as the resource manager class.
+  - **ca.noxid.lab.script**
+    - Anything to do with TSC (text scripts)
+  - **ca.noxid.lab.tile**
+    - Classes used by the Tile view, including the tileset pane and linemode behaviour.
+
+# Compiling
+
+Requires: discord-rpc, Gson, Jackson Databind, Jackson Core, Jackson Annotations, SLF4J API Module, & SLF4J Simple Provider.
+
+  ---
+
+discord-rpc
+- https://github.com/firstdarkdev/discord-rpc
+- https://mvnrepository.com/artifact/dev.firstdark.discordrpc/discord-rpc
+
+Gson
+- https://github.com/google/gson
+- https://central.sonatype.com/artifact/com.google.code.gson/gson
+
+Jackson Databind, Jackson Core, & Jackson Annotations
+- https://github.com/FasterXML/jackson
+- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
+
+SLF4J API Module, & SLF4J Simple Provider.
+- https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+
 
 # License
 This project is licensed under the Apache License, Version 2.0.
