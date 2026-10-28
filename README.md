@@ -117,7 +117,7 @@ units of the editor.
 
 # Compiling
 
-Requires: discord-rpc, Gson, Jackson Databind, Jackson Core, Jackson Annotations, SLF4J API Module, & SLF4J Simple Provider.
+Requires: Java 17, discord-rpc, Gson, Jackson Databind, Jackson Core, Jackson Annotations, SLF4J API Module, & SLF4J Simple Provider.
 
   ---
 
