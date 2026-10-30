@@ -15,6 +15,8 @@ I’m going to assume you’re familiar with Booster’s Lab. If not, that’s o
   - Showcase your love for this Editor!!
 - **Cave Story+ 2026 Support**  
   - Now you can finally use Dog Booster instead of the Booster's Lab Fork.
+- **Auto-save**  
+  - With choices between off, 2 minutes, 5 minutes, & 15 minutes...
 - **Recent Files**  
   - Up to ten of your recently loaded projects appear here.  
 - **New .PXA Editor**  
