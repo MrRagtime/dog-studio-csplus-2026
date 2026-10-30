@@ -249,7 +249,7 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 				//this.firePropertyChange(P_TILE, null, combo.getSelectedItem());
 			} else if (combo == npcList1) {
 				dat.setNPC1(combo.getSelectedItem().toString().substring(3));
-				//this.firePropertyChange(P_NPC1, null, combo.getSelectedItem());				
+				//this.firePropertyChange(P_NPC1, null, combo.getSelectedItem());
 			} else if (combo == npcList2) {
 				dat.setNPC2(combo.getSelectedItem().toString().substring(3));
 				//this.firePropertyChange(P_NPC2, null, combo.getSelectedItem());

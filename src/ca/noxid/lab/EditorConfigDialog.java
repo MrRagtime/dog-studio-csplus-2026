@@ -28,7 +28,27 @@ public class EditorConfigDialog extends JDialog {
 	private static final String PREF_DISABLE_EDITOR_RECT = "disable_editor_rect";
 	private static final String PREF_SCROLL_SPEED = "scroll_speed";
 	private static final String PREF_DISCORD_RPC = "discord_rpc";
+	private static final String PREF_AUTOSAVE = "autosave";
 	private static DiscordRpcHandler discordRpcHandler;
+
+	public static String getAutosaveTime() {
+		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
+		return prefs.get(PREF_AUTOSAVE, "off");
+	}
+
+	private static void setAutosaveTime(String time) {
+		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
+		prefs.put(PREF_AUTOSAVE, time);
+	}
+
+	public static int getAutosaveTimeUnitIncrement() {
+		switch (getAutosaveTime()) {
+			case "two":   return 40;
+			case "five": return 30;
+			case "fifteen": return 20;
+			default:       return 10;
+		}
+	}
 
 	public static String getScrollSpeed() {
 		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
@@ -383,15 +403,14 @@ public class EditorConfigDialog extends JDialog {
 		panel.add(DiscordLabel, c);
 		markRestartRequired();
 
-		c.gridy++;
-
+		//idk
 		JPanel AutosavePanel = new JPanel();
 		AutosavePanel.setOpaque(false);
-		AutosavePanel.setLayout(new BoxLayout(AutosavePanel, BoxLayout.Y_AXIS));
+		AutosavePanel.setLayout(new BoxLayout(AutosavePanel, BoxLayout.X_AXIS));
 
-		JLabel AutosaveLabel = new JLabel("Autosave (Work in Progress)");
+		JLabel AutosaveLabel = new JLabel("Autosave");
 
-		AutosaveLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		AutosaveLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		AutosavePanel.add(AutosaveLabel);
 		AutosavePanel.add(Box.createVerticalStrut(4));
 
@@ -403,19 +422,57 @@ public class EditorConfigDialog extends JDialog {
 		twoRadio.setOpaque(false);
 		fiveRadio.setOpaque(false);
 		fifteenRadio.setOpaque(false);
-		twoRadio.setAlignmentX(Component.LEFT_ALIGNMENT);
-		fiveRadio.setAlignmentX(Component.LEFT_ALIGNMENT);
-		fifteenRadio.setAlignmentX(Component.LEFT_ALIGNMENT);
+		offRadio.setOpaque(false);
+		twoRadio.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		fiveRadio.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		fifteenRadio.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		offRadio.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		AutosaveGroup.add(twoRadio);
 		AutosaveGroup.add(fiveRadio);
 		AutosaveGroup.add(fifteenRadio);
+		AutosaveGroup.add(offRadio);
 
-		AutosaveLabel.add(twoRadio);
-		AutosaveLabel.add(fiveRadio);
-		AutosaveLabel.add(fifteenRadio);
-		AutosaveLabel.add(offRadio);
+		String time = getAutosaveTime();
+
+		if ("two".equals(time)) {
+			twoRadio.setSelected(true);
+		} else if ("five".equals(time)) {
+			fiveRadio.setSelected(true);
+		} else if ("fifteen".equals(time)) {
+			fifteenRadio.setSelected(true);
+		} else {
+			offRadio.setSelected(true);
+		}
+
+		twoRadio.addActionListener(e       -> setAutosaveTime("two"));
+		fiveRadio.addActionListener(e      -> setAutosaveTime("five"));
+		fifteenRadio.addActionListener(e   -> setAutosaveTime("fifteen"));
+		offRadio.addActionListener(e       -> setAutosaveTime("off"));
+
+		AutosavePanel.add(twoRadio);
+		AutosavePanel.add(fiveRadio);
+		AutosavePanel.add(fifteenRadio);
+		AutosavePanel.add(offRadio);
+
+		GridBagConstraints as = new GridBagConstraints();
+		as.anchor  = GridBagConstraints.WEST;
+		as.insets  = new Insets(10, 20, 4, 10);
+		as.gridx   = 1;
+		as.gridy   = 1;
+		as.gridheight = 5;
+		as.weightx = 1.0;
+		as.weighty = 0;
+		panel.add(AutosavePanel, as);
+
+		c.gridx = 0;
+		c.gridy = 6;
+		c.gridwidth = 2;
+		c.weighty = 1.0;
+		c.fill = GridBagConstraints.VERTICAL;
+		panel.add(Box.createGlue(), c);
 
 		// lethrys slop
+		c.gridy++;
 		JPanel scrollPanel = new JPanel();
 		scrollPanel.setOpaque(false);
 		scrollPanel.setLayout(new BoxLayout(scrollPanel, BoxLayout.Y_AXIS));

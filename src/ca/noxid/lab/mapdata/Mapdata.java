@@ -45,144 +45,211 @@ public class Mapdata implements Changeable {
 	public static final String FORMAT_KS = "kingstory";
 	public static final String FORMAT_CSPLUS = "csplus";
 	*/
-	
+
 	private String tilesetName;
+
 	public void setTileset(String s) {
-		if (!tilesetName.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(tilesetName)) {
 			String old = tilesetName;
 			tilesetName = s;
+			markChanged();
 			this.firePropertyChange(P_TILE, old, s);
 		}
 	}
-	public String getTileset() {return tilesetName;}
-	
+
+	public String getTileset() {
+		return tilesetName;
+	}
+
+
 	private String fileName;
+
 	public void setFile(String s) {
-		if (!fileName.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(fileName)) {
 			String old = fileName;
 			fileName = s;
+			markChanged();
 			this.firePropertyChange(P_FILE, old, s);
 		}
 	}
-	public String getFile() {return fileName;}
+
+	public String getFile() {
+		return fileName;
+	}
+
 
 	private String bgName;
+
 	public void setBG(String s) {
-		if (!bgName.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(bgName)) {
 			String old = bgName;
 			bgName = s;
+			markChanged();
 			this.firePropertyChange(P_BGIMG, old, s);
 		}
 	}
-	public String getBG() {return bgName;}
+
+	public String getBG() {
+		return bgName;
+	}
+
 
 	private String bgWaterName;
+
 	public void setBGWater(String s) {
-		if (!bgWaterName.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(bgWaterName)) {
 			String old = bgWaterName;
 			bgWaterName = s;
+			markChanged();
 			this.firePropertyChange(P_BGWATERIMG, old, s);
 		}
 	}
-	public String getBGWater() {return bgWaterName;}
+
+	public String getBGWater() {
+		return bgWaterName;
+	}
+
 
 	private String npcSet1;
+
 	public void setNPC1(String s) {
-		if (!npcSet1.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(npcSet1)) {
 			String old = npcSet1;
 			npcSet1 = s;
+			markChanged();
 			this.firePropertyChange(P_NPC1, old, s);
 		}
 	}
-	public String getNPC1() {return npcSet1;}
-	
+
+	public String getNPC1() {
+		return npcSet1;
+	}
+
+
 	private String npcSet2;
+
 	public void setNPC2(String s) {
-		if (!npcSet2.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(npcSet2)) {
 			String old = npcSet2;
 			npcSet2 = s;
+			markChanged();
 			this.firePropertyChange(P_NPC2, old, s);
 		}
 	}
-	public String getNPC2() {return npcSet2;}
+
+	public String getNPC2() {
+		return npcSet2;
+	}
+
 
 	private String mapName;
+
 	public void setMapname(String s) {
-		if (!mapName.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(mapName)) {
 			String old = mapName;
 			mapName = s;
+			markChanged();
 			this.firePropertyChange(P_NAME, old, s);
 		}
 	}
-	public String getMapname() {return mapName;}
+
+	public String getMapname() {
+		return mapName;
+	}
+
 
 	private String camera;
+
 	public void setCamera(String s) {
-		if (!camera.equals(s) && s != null) {
+		if (s != null && !s.equals(camera)) {
 			String old = camera;
 			camera = s;
+			markChanged();
 			this.firePropertyChange(P_CAMERA, old, s);
 		}
 	}
-	public String getCamera() {return camera;}
-	
-	private byte[] jpName;
-	public void setJpName(byte[] b){
-		markChanged();
-		jpName = b.clone();
+
+	public String getCamera() {
+		return camera;
 	}
-	public byte[] getJpName() {return jpName.clone();}
-	
+
+
+	private byte[] jpName;
+
+	public void setJpName(byte[] b) {
+		if (b != null && !java.util.Arrays.equals(jpName, b)) {
+			jpName = b.clone();
+			markChanged();
+		}
+	}
+
+	public byte[] getJpName() {
+		return jpName == null ? null : jpName.clone();
+	}
+
+
 	private int scrollType;
+
 	public void setScroll(int n) {
 		if (n != scrollType) {
-			markChanged();
 			int old = scrollType;
 			scrollType = n;
+			markChanged();
 			this.firePropertyChange(P_SCROLL, old, n);
 		}
 	}
-	public int getScroll() {return scrollType;}
+
+	public int getScroll() {
+		return scrollType;
+	}
+
 
 	private int bossNum;
+
 	public void setBoss(int n) {
 		if (n != bossNum) {
-			markChanged();
 			int old = bossNum;
 			bossNum = n;
+			markChanged();
 			this.firePropertyChange(P_BOSS, old, n);
 		}
 	}
-	public int getBoss() {return bossNum;}
+
+	public int getBoss() {
+		return bossNum;
+	}
+
 
 	private String lighting;
+
 	public void setLighting(String s) {
-		if (!lighting.equals(s) && s != null) {
-			markChanged();
+		if (s != null && !s.equals(lighting)) {
 			String old = lighting;
 			lighting = s;
+			markChanged();
 			this.firePropertyChange(P_LIGHTING, old, s);
 		}
 	}
-	public String getLighting() {return lighting;}
-	
+
+	public String getLighting() {
+		return lighting;
+	}
+
+
 	private int mapNum;
+
 	public void setMapnum(int n) {
 		if (n != mapNum) {
-			markChanged();
 			int old = mapNum;
 			mapNum = n;
+			markChanged();
 			this.firePropertyChange(P_NUM, old, n);
 		}
 	}
-	public int getMapnum() {return mapNum;}
+
+	public int getMapnum() {
+		return mapNum;
+	}
 	
 	private boolean changed = false;
 

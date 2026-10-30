@@ -89,6 +89,7 @@ import java.io.File;
 
 // @SuppressWarnings("rawtypes")
 public class EditorApp extends JFrame implements ActionListener {
+
 	private static final long serialVersionUID = -2975049719856443233L;
 
 	// About
@@ -100,7 +101,7 @@ public class EditorApp extends JFrame implements ActionListener {
 	private static final String VER_NUM = ""; //$NON-NLS-1$
 	private static final String TITLE_STR = "Dog Studio" + VER_NUM;
 	private static final String ABOUT_STR = Messages.getString("EditorApp.1") + VER_NUM + "\n" + //$NON-NLS-1$ //$NON-NLS-2$
-			"By Noxid, Sam & K, Dr. Ragtime, Autumn, Enlight, and Others - 10/23/2026\n" + //$NON-NLS-1$
+			"By Noxid, Sam & K, Dr. Ragtime, Autumn, Enlight, and Others - 10/29/2026\n" + //$NON-NLS-1$
 			Messages.getString("EditorApp.4") + //$NON-NLS-1$
 			Messages.getString("EditorApp.5"); //$NON-NLS-1$
 
@@ -289,7 +290,7 @@ public class EditorApp extends JFrame implements ActionListener {
 		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
 		return prefs.get(PREF_THEME, DEFAULT_THEME);
 	}
-	
+
 	public static void setTheme(String theme) {
 		Preferences prefs = Preferences.userNodeForPackage(EditorApp.class);
 		prefs.put(PREF_THEME, theme);
@@ -2479,6 +2480,9 @@ public class EditorApp extends JFrame implements ActionListener {
 		TscPane TSC;
 		MapdataPane mapdata;
 		TscBuilder tscBuilder;
+		//
+		private Vector<Mapdata> mapdataStore;
+		private File dataDir;
 
 		boolean starred = false;
 
@@ -2535,6 +2539,52 @@ public class EditorApp extends JFrame implements ActionListener {
 						}
 					}
 				}
+			}
+		}
+
+		public void autoSave() {
+
+			new File(dataDir, "dog.studio/backup");
+
+			if (mapdataStore == null || mapdataStore.isEmpty()) {
+				return;
+			}
+
+			try {
+				for (Mapdata d : mapdataStore) {
+					String backupPath = dataDir + "/dog.studio/backup/"
+							+ d.getFile() + ".tsc";
+
+					File backupFile = new File(backupPath);
+
+					File scriptFile = new File(
+							dataDir + "/Stage/" + d.getFile() + ".tsc"
+					);
+
+					if (scriptFile.isFile()) {
+						File parentDir = backupFile.getParentFile();
+
+						if (parentDir != null) {
+							Files.createDirectories(parentDir.toPath());
+						}
+
+						Files.copy(
+								scriptFile.toPath(),
+								backupFile.toPath(),
+								StandardCopyOption.REPLACE_EXISTING
+						);
+
+						System.out.println(
+								"Auto-saved" + scriptFile.getName()
+						);
+					} else {
+						System.err.println(
+								"Script file not found" + scriptFile
+						);
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 
@@ -2643,10 +2693,44 @@ public class EditorApp extends JFrame implements ActionListener {
 			} else if (eve.getPropertyName() == Changeable.PROPERTY_EDITED) {
 				if ((Boolean) eve.getNewValue()) {
 					markChanged();
+					startAutoSave();
 				} else {
 					markUnchanged();
 				}
 			}
+		}
+
+		public void startAutoSave() {
+			if (autoSaveTimer != null && autoSaveTimer.isRunning()) {
+				autoSaveTimer.stop();
+			}
+
+			int timeUnits = EditorConfigDialog.getAutosaveTimeUnitIncrement();
+
+			int minutes = 5; // default value
+
+			if (EditorConfigDialog.getAutosaveTimeUnitIncrement() == 10) {
+				return; // off
+			} else if (EditorConfigDialog.getAutosaveTimeUnitIncrement() == 40) {
+				minutes = 2; // "two minutes"
+			} else if (EditorConfigDialog.getAutosaveTimeUnitIncrement() == 30) {
+				minutes = 5; // "five minutes"
+			} else if (EditorConfigDialog.getAutosaveTimeUnitIncrement() == 20) {
+				minutes = 15; // "fifteen minutes"
+			}
+
+			int delayInMilliseconds = timeUnits * 1_000;
+
+			autoSaveTimer = new javax.swing.Timer(delayInMilliseconds, e -> {
+				if (data.isModified()
+						|| TSC.isModified()
+						|| mapdata.isModified()) {
+					save();
+					System.out.println("Auto-save triggered");
+				}
+			});
+
+			autoSaveTimer.start();
 		}
 
 		/**
@@ -2708,7 +2792,7 @@ public class EditorApp extends JFrame implements ActionListener {
 			mapTabs.insertTab(exeData.getShortName(selectionNum), null, contents, exeData.getLongName(selectionNum),
 					mapTabs.getComponentCount());
 			mapTabs.setSelectedComponent(contents);
-			
+
 			// Reset Entity filter on new tab
 			entitySearchQuery = "";
 			int selected = EditorApp.this.mapTabs.getSelectedIndex();
@@ -2719,7 +2803,7 @@ public class EditorApp extends JFrame implements ActionListener {
 						subcatList.getSelectedValue(), entitySearchQuery);
 				ep.getEntityList().setListData(eVec);
 				}
-			
+
 			if (scriptWindow.getName().equals(Messages.getString("EditorApp.2"))) { //$NON-NLS-1$
 				scriptWindow.add(scriptTabs, BorderLayout.CENTER);
 				scriptWindow.add(buildScriptSidePanel(), scriptPanelOnEast ? BorderLayout.EAST : BorderLayout.WEST);
@@ -2782,7 +2866,7 @@ public class EditorApp extends JFrame implements ActionListener {
 		Component contents = buildTabContents(holder);
 		mapTabs.insertTab(mapdat.getFile(), null, contents, mapdat.getMapname(), mapTabs.getComponentCount());
 		mapTabs.setSelectedComponent(contents);
-		
+
 		// Reset Entity filter on new tab
 		entitySearchQuery = "";
 		int selected = EditorApp.this.mapTabs.getSelectedIndex();
@@ -2793,7 +2877,7 @@ public class EditorApp extends JFrame implements ActionListener {
 					subcatList.getSelectedValue(), entitySearchQuery);
 			ep.getEntityList().setListData(eVec);
 			}
-		
+
 		if (scriptWindow.getName().equals(Messages.getString("EditorApp.2"))) { //$NON-NLS-1$
 			scriptWindow.add(scriptTabs, BorderLayout.CENTER);
 			scriptWindow.add(buildScriptSidePanel(), scriptPanelOnEast ? BorderLayout.EAST : BorderLayout.WEST);
@@ -3040,8 +3124,6 @@ public class EditorApp extends JFrame implements ActionListener {
 	public void loadFile(File selected) throws IOException {
 		purgeData(); // clean up any old tabs
 		exeData = new GameInfo(selected);
-
-		exeData.startAutoSave(); // I think the "exeData." part is what keeps it from not working but removing it causes issues. - Dr. Ragtime
 
 		exeData.loadImages(iMan);
 		mapSearchQuery = "";
@@ -3476,7 +3558,7 @@ public class EditorApp extends JFrame implements ActionListener {
 		JScrollPane mapScroll = new JScrollPane(mapPanel);
 		EntityPane entityPanel = inf.getEntity();	// Edit map
 		JScrollPane npcScroll = new JScrollPane(entityPanel);
-		
+
 		// Entity search box
 		JTextField searchField = new JTextField("");
 		TextPrompt searchFieldPrompt = new TextPrompt("Filter Entities...", searchField);
@@ -3732,6 +3814,14 @@ public class EditorApp extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
+
+		Thread.setDefaultUncaughtExceptionHandler(
+				new ExceptionHandler()
+		);
+
+		//if (true) {
+			//throw new RuntimeException("Test crash Dog Studio..."); // sorry sam!! - Dr. Ragtime
+		//}
 
 		// parse args
 		for (String s : args) {

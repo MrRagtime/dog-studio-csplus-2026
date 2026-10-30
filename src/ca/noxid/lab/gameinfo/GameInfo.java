@@ -5,7 +5,9 @@ import ca.noxid.lab.EditorConfigDialog;
 import ca.noxid.lab.FileSuffixFilter;
 import ca.noxid.lab.Messages;
 import ca.noxid.lab.entity.EntityData;
+import ca.noxid.lab.mapdata.MapInfo;
 import ca.noxid.lab.mapdata.Mapdata;
+import ca.noxid.lab.mapdata.MapdataPane;
 import ca.noxid.lab.rsrc.ResourceManager;
 import ca.noxid.lab.script.TscLexer;
 import ca.noxid.lab.script.TscPane;
@@ -31,6 +33,7 @@ public class GameInfo {
 	private File base;
 	private File dataDir;
 	private BlConfig gameConfig;
+	private javax.swing.Timer autoSaveTimer;
 	private static final boolean GIRS_SPECIAL_MAP_SORT = false;
 	
 	private static final String entityInfo_head = "//num	short1	short2	long rect desc category\r\n" +
@@ -187,7 +190,7 @@ public class GameInfo {
 			else
 				defaultImageExt = ".bmp";
 		}
-        File configFolder = new File(dataDir,"backup");
+        File configFolder = new File(dataDir,".dogstudio");
         gameConfig = new BlConfig(configFolder, type, dataDir);
 		String imageExtension = gameConfig.getImageExtension();
 		if (".pbm".equals(imageExtension))
@@ -1145,47 +1148,6 @@ public class GameInfo {
 		return exeData;
 	}
 
-	public void startAutoSave() {
-		javax.swing.Timer autoSaveTimer = new Timer(5_000, e -> {
-			if (exeData != null && exeData.areUnsavedChanges()) {
-				autoSave();
-			}
-		});
-
-		autoSaveTimer.start();
-	}
-
-	private void autoSave() { // - Dr. Ragtime: Way too confusing for me to add right now...
-		try {
-			if (mapdataStore == null || mapdataStore.isEmpty())
-				return;
-			for (Mapdata d : mapdataStore) {
-				mapdataStore = new Vector<>();
-				String subDir = "/backup/";
-
-				String backupPath = dataDir + subDir + d.getFile() + ".tsc";
-				File backupFile = new File(backupPath);
-
-				File scriptFile = new File(
-						dataDir + "/Stage/" + d.getFile() + ".tsc"
-				);
-
-				if (scriptFile.exists()) {
-					backupFile.getParentFile().mkdirs();
-
-					Files.copy(
-							scriptFile.toPath(),
-							backupFile.toPath(),
-							StandardCopyOption.REPLACE_EXISTING
-					);
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void populateCategoryLists() {
 		categoryMap = new HashMap<>();
 		EntityCategory allCat = new EntityCategory();
@@ -1923,7 +1885,7 @@ public class GameInfo {
 			executable.commit();
 		} 
 	}
-	
+
 	public boolean areUnsavedChanges() {
 		boolean changes = (executable != null && executable.isModified());
 		for (Mapdata d : mapdataStore) {
@@ -1931,7 +1893,7 @@ public class GameInfo {
 		}
 		return changes;
 	}
-	
+
 	public EntityData getEntityInfo(int n) {
 		EntityCategory allCat = categoryMap.get("All"); //$NON-NLS-1$
 		return allCat.getEntity("All", n);
@@ -2219,12 +2181,14 @@ public class GameInfo {
 			String sourcePath = dataDir + subDir + d.getFile() + ".tsc"; //$NON-NLS-1$
 			File sourceFile = new File(sourcePath);
 
-			String backupPath = dataDir + "/backup/" + d.getFile() + ".tsc";
+			String backupPath = dataDir + "/dog.studio/backup/" + d.getFile() + ".tsc";
+
 			File backupFile = new File(backupPath);
 
-			if (!sourceFile.exists()) //make sure it's actually there before we go at it
+			Files.createDirectories(backupFile.toPath().getParent());
+
+			if (!sourceFile.exists())
 				continue;
-			//parse the file
 			TscLexer tLex = new TscLexer();
 			tLex.reset(new StringReader(TscPane.parseScript(sourceFile, gameConfig.getEncoding(), type)), 0, -1, 0);
 			TscToken t;
@@ -2497,6 +2461,9 @@ public class GameInfo {
 			foundFiles.add(new File(dataDir + "/Stage/" + m.getFile() + ".tsc"));
 			if (EditorConfigDialog.isAutumnalLabEnabled()) {
 				foundFiles.add(new File(dataDir + "/Stage/" + m.getFile() + ".cpxe")); //$NON-NLS-1$
+			}
+			if (base.toString().endsWith(".tbl")) { //$NON-NLS-1$ {
+				foundFiles.add(new File(dataDir + "/Stage/" + m.getFile() + ".pxcm")); //$NON-NLS-1$	// CSMP - Dr. Ragtime
 			}
 		}
 		
