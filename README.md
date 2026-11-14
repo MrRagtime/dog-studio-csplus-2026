@@ -1,5 +1,5 @@
 # Misery's Magica
-A Cave Story level editor built off of Sam & K’s [Dog Studio](https://github.com/SamanthaKcles/dog-studio).
+A Cave Story Level Editor built off of Sam & K’s [Dog Studio](https://github.com/SamanthaKcles/dog-studio).
 
 # Purpose  
 I wanted Dog Studio to truly be a, "everything editor"... So I made this.
@@ -10,7 +10,7 @@ Here is a list of the new features in this editor:
 ### General
 
 - **Discord RPC**  
-  - Showcase your love for this Editor!!
+  - Showcase your love for this Editor!! - Thank you [KiwifruitDev](https://github.com/KiwifruitDev)
 - **Cave Story+ 2026 Support**  
   - Now you can finally use Misery's Magica instead of the [Booster's Lab Fork](https://github.com/Clownacy/boosters-lab-csplus-2026).
 - **Other Engines too!!**
